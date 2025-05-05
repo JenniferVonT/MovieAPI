@@ -1,0 +1,14 @@
+{
+  "name": "assignment-api-design",
+  "version": "1.0.0",
+  "description": "A GraphQL API for handling a movie database/data",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --inspect --env-file=.env src/server.js",
+    "lint": "npx eslint ./src || exit 0",
+    "lint:fix": "npx eslint ./src --fix || exit 0"
+  },
+  "author": "Jennifer von Trotta-Treyden <jv222th>",
+  "license": "MIT"
+}

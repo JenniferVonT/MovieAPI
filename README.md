@@ -2,7 +2,7 @@
 Clearly state the name of your API project.
 
 # Implementation type
-Specify your implementation type (REST or GraphQL) 
+- GraphQL 
 
 # Links 
 - [Production url]
