@@ -9,9 +9,12 @@ import httpContext from 'express-http-context' // Must be first!
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
+import { typeDefs } from './models/schema.js'
+import { resolvers } from './resolvers/resolvers.js'
 import { randomUUID } from 'node:crypto'
 import http from 'node:http'
-import { morganLogger } from './config/morgan.js'
 import { logger } from './config/winston.js'
 
 try {
@@ -34,10 +37,8 @@ try {
   //       See https://www.npmjs.com/package/express-http-context.
   app.use(httpContext.middleware)
 
-  // Use a morgan logger.
-  app.use(morganLogger)
 
-  // Middleware to be executed before the routes.
+  // Middleware.
   app.use((req, res, next) => {
     // Add a request UUID to each request and store information about
     // each request in the request-scoped context.
@@ -47,6 +48,19 @@ try {
     next()
   })
 
+  // Initialize Apollo Server.
+  const graphqlServer = new ApolloServer({
+    typeDefs,
+    resolvers
+  })
+
+  await graphqlServer.start()
+
+  // Mount GraphQL endpoint middleware.
+  app.use('/graphql', expressMiddleware(graphqlServer))
+
+  // Health check endpoint (optional, useful in production).
+  app.get('/health', (req, res) => res.status(200).send('OK'))
 
   // Error handler.
   app.use((err, req, res, next) => {

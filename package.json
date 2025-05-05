@@ -4,6 +4,9 @@
   "description": "A GraphQL API for handling a movie database/data",
   "main": "src/server.js",
   "type": "module",
+  "engines": {
+    "node": ">=20.6.0"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon --inspect --env-file=.env src/server.js",
@@ -14,6 +17,7 @@
     "@apollo/server": "^4.12.0",
     "@graphql-tools/mock": "^9.0.0",
     "@graphql-tools/schema": "^10.0.0",
+    "@lnu/json-js-cycle": "^2.0.5",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-http-context": "^1.2.4",
@@ -23,13 +27,17 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.0",
-    "morgan": "^1.10.0",
     "validator": "^13.11.0",
     "winston": "^3.13.0"
   },
   "devDependencies": {
+    "@lnu/eslint-config": "^1.1.10",
     "dotenv": "^16.0.0",
-    "nodemon": "^3.0.1"
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "ngrok": "^5.0.0-beta.2",
+    "nodemon": "^3.0.1",
+    "npm": "^11.3.0"
   },
   "author": "Jennifer von Trotta-Treyden <jv222th>",
   "license": "MIT"
