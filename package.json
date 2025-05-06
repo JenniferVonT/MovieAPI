@@ -27,6 +27,7 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.0",
+    "mysql2": "^3.14.1",
     "validator": "^13.11.0",
     "winston": "^3.13.0"
   },

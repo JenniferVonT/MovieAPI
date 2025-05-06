@@ -16,9 +16,11 @@ import { resolvers } from './resolvers/resolvers.js'
 import { randomUUID } from 'node:crypto'
 import http from 'node:http'
 import { logger } from './config/winston.js'
+import { connectToDatabase, db } from './config/dbsettings.js'
 
 try {
-  // Connect to database TO-DO: Implement DB connection.
+  // Connect to database
+  await connectToDatabase(db)
 
   // Create an Express application.
   const app = express()

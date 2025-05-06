@@ -7,6 +7,7 @@
 
 import { gql } from 'graphql-tag'
 
+// TO-DO: Update the correct queries!
 export const typeDefs = gql`
   type Query {
     hello: String
