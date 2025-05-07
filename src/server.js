@@ -73,8 +73,26 @@ try {
 
   await graphqlServer.start()
 
-  // Mount GraphQL endpoint middleware.
-  app.use('/graphql', expressMiddleware(graphqlServer))
+  // Mount GraphQL endpoint middleware and set the context.
+  app.use('/graphql', expressMiddleware(graphqlServer, {
+    /**
+     * Extract the JWT token from the header and insert in the context.
+     *
+     * @param {object} param0 - An object containing the incoming request.
+     * @param {import('express').Request} param0.req - The Express request object, used to access headers.
+     * @returns {object} - The JWT token within the context.
+     */
+    context: async ({ req }) => {
+      // Extract the Authorization header.
+      const authHeader = req.headers.authorization || ''
+
+      // If the Authorization header exists and contains the Bearer token, extract the token.
+      const token = authHeader.startsWith('Bearer') ? authHeader.split(' ')[1] : null
+
+      // Return the token in the context object (or null if not found)
+      return { token }
+    }
+  }))
 
   // Health check endpoint (optional, useful in production).
   app.get('/health', (req, res) => res.status(200).send('OK'))
