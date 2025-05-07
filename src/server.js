@@ -11,7 +11,7 @@ import express from 'express'
 import helmet from 'helmet'
 import { ApolloServer } from '@apollo/server'
 import { expressMiddleware } from '@apollo/server/express4'
-import { typeDefs } from './models/schema.js'
+import { typeDefs } from './schemas/schema.js'
 import { resolvers } from './resolvers/resolvers.js'
 import { randomUUID } from 'node:crypto'
 import http from 'node:http'
@@ -38,7 +38,6 @@ try {
   // NOTE! Must be placed before any middle that needs access to the context!
   //       See https://www.npmjs.com/package/express-http-context.
   app.use(httpContext.middleware)
-
 
   // Middleware.
   app.use((req, res, next) => {

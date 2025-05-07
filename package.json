@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.12.0",
+    "@graphql-tools/merge": "^9.0.24",
     "@graphql-tools/mock": "^9.0.0",
     "@graphql-tools/schema": "^10.0.0",
     "@lnu/json-js-cycle": "^2.0.5",
@@ -34,12 +35,16 @@
   "devDependencies": {
     "@lnu/eslint-config": "^1.1.10",
     "dotenv": "^16.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.29.1",
+    "globals": "^16.1.0",
     "ngrok": "^5.0.0-beta.2",
     "nodemon": "^3.0.1",
     "npm": "^11.3.0"
   },
   "author": "Jennifer von Trotta-Treyden <jv222th>",
-  "license": "MIT"
+  "license": "MIT",
+  "eslintConfig": {
+    "extends": "@lnu"
+  }
 }

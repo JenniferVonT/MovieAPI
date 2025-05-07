@@ -9,19 +9,24 @@ import { db } from '../config/dbsettings.js'
 
 // TO-DO: Change to correct resolvers, this is just to test the db connection.
 export const resolvers = {
-    Query: {
-      hello: async () => {
-        try {
-          // Try a simple query
-          const response = await db.query('SELECT Profile_path FROM Actor WHERE name = "Tom Hanks"');
-          const profile = response[0]
-          const path = profile[0].Profile_path
-          
-          return `Tom Hanks profile path!: ${path}`;
-        } catch (err) {
-          // If there's an error, return it
-          return `Database connection failed: ${err.message}`;
-        }
+  Query: {
+    /**
+     * Testing a query.
+     *
+     * @returns {string} - query response
+     */
+    hello: async () => {
+      try {
+        // Try a simple query
+        const response = await db.query('SELECT Profile_path FROM Actor WHERE name = "Tom Hanks"')
+        const profile = response[0]
+        const path = profile[0].Profile_path
+
+        return `Tom Hanks profile path!: ${path}`
+      } catch (err) {
+        // If there's an error, return it
+        return `Database connection failed: ${err.message}`
       }
     }
   }
+}
