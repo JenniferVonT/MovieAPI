@@ -30,34 +30,46 @@ export const userResolvers = {
     /**
      * Create a new user for authentication.
      *
-     * @param {Object} parent - parent object.
+     * @param {object} parent - parent object.
      * @param {string} payload - username and password.
      * @returns {string} - Confirmation message.
      */
     newUser: async (parent, payload) => {
       try {
         const { username, password } = payload
+        let error
 
-        // Check if the username and password is vaild.
+        // Check if the username and password is a vaild length.
         if (username.length < 4) {
-          const error = new Error('Username not long enough, it needs to be atleast 4 characters long')
+          error = new Error('Username not long enough, it needs to be atleast 4 characters long')
           error.status = 422
-          throw error
         }
 
         if (password.length < 10) {
-          const error = new Error('Password not long enough, it needs to be atleast 10 characters long')
-          error.status = 422
+          if (error) {
+            error.message = 'Username and password not long enough. Username needs to be atleast 4 characters long and password 10 characters long'
+          } else {
+            error = new Error('Password not long enough, it needs to be atleast 10 characters long')
+            error.status = 422
+          }
+        }
+
+        if (error) {
           throw error
         }
 
         // Hash the password.
         const hashedPassword = await argon2.hash(password)
 
-        /*
+        // Create the user in the database, if the user exist already throw an error.
         const query = 'INSERT INTO User (username, password) VALUES (?, ?)'
-        await db.execute(query, [username, hashedPassword])
-        */
+        const response = await db.execute(query, [username, hashedPassword])
+
+        if (!response) {
+          error = new Error('That username already exists, try again.')
+          error.status = 409
+          throw error
+        }
 
         return 'A user was successfully created, login to get an authentication key!'
       } catch (error) {
