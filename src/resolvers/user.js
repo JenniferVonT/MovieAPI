@@ -7,6 +7,7 @@
 
 import { DatabaseHandler } from '../lib/databaseHandler.js'
 import { JsonWebToken } from '../lib/JsonWebToken.js'
+import { authenticateUser } from '../lib/authenticateUser.js'
 import argon2 from 'argon2'
 
 const DBHandler = new DatabaseHandler()
@@ -135,27 +136,8 @@ export const userResolvers = {
     deleteUser: async (parent, args, context) => {
       try {
         const accessToken = context.token
-        let error
 
-        // If access token is missing throw an error.
-        if (!accessToken) {
-          error = new Error('JWT access token needed for this operation. Login to get it.')
-          error.status = 401
-          throw error
-        }
-
-        // Decode the JWT and check against the database.
-        const JWT = await JsonWebToken.decodeUser(accessToken, process.env.JWT_KEY)
-
-        // Get the user.
-        const user = await DBHandler.getUser(JWT.username)
-
-        // Check that the ID is correct.
-        if (JWT.id !== user.ID) {
-          error = new Error('Invalid access token')
-          error.status = 403
-          throw error
-        }
+        const user = await authenticateUser(accessToken)
 
         // If correct delete from the DB.
         await DBHandler.deleteUser(user.ID)
