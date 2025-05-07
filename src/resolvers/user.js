@@ -7,8 +7,7 @@
 
 import { db } from '../config/dbsettings.js'
 import { JsonWebToken } from '../lib/JsonWebToken.js'
-
-// TO-DO: IMPLEMENT CORRECT USER RESOLVER.
+import argon2 from 'argon2'
 
 export const userResolvers = {
   Query: {
@@ -31,13 +30,40 @@ export const userResolvers = {
     /**
      * Create a new user for authentication.
      *
-     * @param {string} username - new username.
-     * @param {string} password - new password.
+     * @param {Object} parent - parent object.
+     * @param {string} payload - username and password.
      * @returns {string} - Confirmation message.
      */
-    newUser: (username, password) => {
-      console.log(username, password)
-      return 'A user was successfully created, login to get an authentication key!'
+    newUser: async (parent, payload) => {
+      try {
+        const { username, password } = payload
+
+        // Check if the username and password is vaild.
+        if (username.length < 4) {
+          const error = new Error('Username not long enough, it needs to be atleast 4 characters long')
+          error.status = 422
+          throw error
+        }
+
+        if (password.length < 10) {
+          const error = new Error('Password not long enough, it needs to be atleast 10 characters long')
+          error.status = 422
+          throw error
+        }
+
+        // Hash the password.
+        const hashedPassword = await argon2.hash(password)
+
+        /*
+        const query = 'INSERT INTO User (username, password) VALUES (?, ?)'
+        await db.execute(query, [username, hashedPassword])
+        */
+
+        return 'A user was successfully created, login to get an authentication key!'
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**

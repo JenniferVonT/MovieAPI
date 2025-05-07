@@ -14,7 +14,6 @@ import { expressMiddleware } from '@apollo/server/express4'
 import { typeDefs } from './schemas/schema.js'
 import { resolvers } from './resolvers/resolver.js'
 import { randomUUID } from 'node:crypto'
-import http from 'node:http'
 import { logger } from './config/winston.js'
 import { connectToDatabase, db } from './config/dbsettings.js'
 
@@ -52,7 +51,24 @@ try {
   // Initialize Apollo Server.
   const graphqlServer = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    /**
+     * Set up a custom error handler, only show pertinent information in production.
+     *
+     * @param {GraphQLFormattedError} formattedError - Default formatted error object.
+     * @param {GraphQLError} error - Raw error object.
+     * @returns {object} - A custom error object.
+     */
+    formatError: (formattedError, error) => {
+      if (process.env.NODE_ENV === 'production') {
+        return {
+          message: error.message,
+          code: error.extensions?.code || 'INTERNAL_SERVER_ERROR'
+        }
+      }
+
+      return error
+    }
   })
 
   await graphqlServer.start()
@@ -62,45 +78,6 @@ try {
 
   // Health check endpoint (optional, useful in production).
   app.get('/health', (req, res) => res.status(200).send('OK'))
-
-  // Error handler.
-  app.use((err, req, res, next) => {
-    logger.error(err.message, { error: err })
-
-    if (process.env.NODE_ENV === 'production') {
-      // Ensure a valid status code is set for the error.
-      // If the status code is not provided, default to 500 (Internal Server Error).
-      // This prevents leakage of sensitive error details to the client.
-      if (!err.status) {
-        err.status = 500
-        err.message = http.STATUS_CODES[err.status]
-      }
-
-      // Send only the error message and status code to prevent leakage of
-      // sensitive information.
-      res
-        .status(err.status)
-        .json({
-          status_code: err.status,
-          message: err.message
-        })
-
-      return
-    }
-
-    // ---------------------------------------------------
-    // ⚠️ WARNING: Development Environment Only!
-    //             Detailed error information is provided.
-    // ---------------------------------------------------
-
-    // Deep copies the error object and returns a new object with
-    // enumerable and non-enumerable properties (cyclical structures are handled).
-    const copy = JSON.stringify(err, Object.getOwnPropertyNames(err))
-
-    return res
-      .status(err.status || 500)
-      .json(copy)
-  })
 
   // Starts the HTTP server listening for connections.
   const server = app.listen(process.env.PORT, () => {

@@ -19,6 +19,7 @@
     "@graphql-tools/mock": "^9.0.0",
     "@graphql-tools/schema": "^10.0.0",
     "@lnu/json-js-cycle": "^2.0.5",
+    "argon2": "^0.43.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-http-context": "^1.2.4",
