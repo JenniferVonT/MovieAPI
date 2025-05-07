@@ -15,8 +15,24 @@ export const movieTypeDefs = gql`
     description: String!
     release_year: Int!
   }
+  
+  type Actor {
+    id: ID!
+    name: String!
+    gender: String!
+    profile_path: String!
+  }
 
-  extend type Query {
+  type Query {
     movies: [Movie]
+    actors: [Actor]
+  }
+
+  type Mutation {
+    movie(id: ID!): Movie
+    addMovie(title: String!, release_year: Int!, genre: String!): String!
+    updateMovie(id: ID!, title: String!, release_year: Int!, genre: String!): String!
+    deleteMovie(id: ID!, title: String!, release_year: Int!, genre: String!): String!
+    ratings(movie_id: ID!): String!
   }
 `

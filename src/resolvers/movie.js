@@ -12,18 +12,25 @@ export const movieResolvers = {
     /**
      * Fetch some movies.
      *
-     * @returns {Array} - an array of movies.
+     * @returns {Array} - an array of all the movies.
      */
     movies: async () => {
-      // try {
-      // Replace with DB logic
       return [
         { id: 101, title: 'The Matrix', releaseYear: 1999 },
         { id: 102, title: 'Inception', releaseYear: 2010 }
       ]
-      /* } catch (err) {
-        // throw new Error(`Failed to fetch movies: ${err.message}`)
-      } */
+    },
+
+    /**
+     * Fetch all the movies.
+     *
+     * @returns {Array} - an array of all the actors.
+     */
+    actors: async () => {
+      return [
+        { id: 5, name: 'Tom Hanks', Gender: 'Male', profile_path: './path/to/image' },
+        { id: 6, name: 'Jennifer Lawrence', Gender: 'Female', profile_path: './path/to/image' }
+      ]
     }
   }
 }
