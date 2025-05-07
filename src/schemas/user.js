@@ -10,12 +10,16 @@ import { gql } from 'graphql-tag'
 // TO-DO: Update the correct queries!
 export const userTypeDefs = gql`
   type User {
-    id: ID!
-    name: String!
-    email: String!
+    username: String!
+    password: String!
   }
 
-  extend type Query {
-    users: [User]
+  type Query {
+    userOperations: String!
+  }
+
+  type Mutation {
+    newUser(username: String!, password: String!): String!
+    login(username: String!, password: String!): String!
   }
 `
