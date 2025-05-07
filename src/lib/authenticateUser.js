@@ -5,10 +5,10 @@
  * @version 1.0.0
  */
 
-import { DatabaseHandler } from './databaseHandler.js'
+import { UserDatabaseHandler } from './userDatabaseHandler.js'
 import { JsonWebToken } from './JsonWebToken.js'
 
-const DBHandler = new DatabaseHandler()
+const DBHandler = new UserDatabaseHandler()
 
 /**
  * Verify the user against the JWT.

@@ -5,12 +5,12 @@
  * @version 1.0.0
  */
 
-import { DatabaseHandler } from '../lib/databaseHandler.js'
+import { UserDatabaseHandler } from '../lib/userDatabaseHandler.js'
 import { JsonWebToken } from '../lib/JsonWebToken.js'
 import { authenticateUser } from '../lib/authenticateUser.js'
 import argon2 from 'argon2'
 
-const DBHandler = new DatabaseHandler()
+const DBHandler = new UserDatabaseHandler()
 
 export const userResolvers = {
   Query: {

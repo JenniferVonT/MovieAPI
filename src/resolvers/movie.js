@@ -5,10 +5,15 @@
  * @version 1.0.0
  */
 
+import { authenticateUser } from '../lib/authenticateUser.js'
+import { MovieDatabaseHandler } from '../lib/movieDatabaseHandler.js'
+
+const DBHandler = new MovieDatabaseHandler()
+
 export const movieResolvers = {
   Query: {
     /**
-     * Fetch some movies.
+     * Fetch all the movies in the database.
      *
      * @returns {Array} - an array of all the movies.
      */
@@ -62,7 +67,7 @@ export const movieResolvers = {
     },
 
     /**
-     * Update a movie in the database
+     * Update a movie in the database.
      *
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.
@@ -75,7 +80,7 @@ export const movieResolvers = {
     },
 
     /**
-     * Delete a movie in the database
+     * Delete a movie in the database.
      *
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.
@@ -88,7 +93,7 @@ export const movieResolvers = {
     },
 
     /**
-     * Fetch a movies ratings in the database
+     * Fetch a movies ratings in the database.
      *
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.

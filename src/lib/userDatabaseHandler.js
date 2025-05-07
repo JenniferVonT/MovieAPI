@@ -1,6 +1,6 @@
 /**
- * @file  Provides functions to the database.
- * @module lib/databaseHandler
+ * @file  Provides functions to the user portion of the database.
+ * @module lib/userDatabaseHandler
  * @author Jennifer von Trotta-Treyden <jv222th@student.lnu.se>
  * @version 1.0.0
  */
@@ -10,7 +10,7 @@ import { db } from '../config/dbsettings.js'
 /**
  * A database handler class.
  */
-export class DatabaseHandler {
+export class UserDatabaseHandler {
   /**
    * Gets a user from the database by their username.
    *
