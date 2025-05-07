@@ -6,6 +6,7 @@
  */
 
 import { db } from '../config/dbsettings.js'
+import { JsonWebToken } from '../lib/JsonWebToken.js'
 
 // TO-DO: IMPLEMENT CORRECT USER RESOLVER.
 
