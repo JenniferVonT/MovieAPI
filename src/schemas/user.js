@@ -7,7 +7,6 @@
 
 import { gql } from 'graphql-tag'
 
-// TO-DO: Update the correct queries!
 export const userTypeDefs = gql`
   type User {
     username: String!
@@ -21,5 +20,6 @@ export const userTypeDefs = gql`
   type Mutation {
     newUser(username: String!, password: String!): String!
     login(username: String!, password: String!): String!
+    deleteUser: String!
   }
 `

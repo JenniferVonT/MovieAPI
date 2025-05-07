@@ -30,7 +30,7 @@ export class JsonWebToken {
         payload,
         key,
         {
-          algorithm: 'RS256',
+          algorithm: 'HS256',
           expiresIn
         },
         (error, token) => {

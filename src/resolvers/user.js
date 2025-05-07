@@ -81,13 +81,74 @@ export const userResolvers = {
     /**
      * Login to get a JWT token for authentication.
      *
-     * @param {string} username - user
-     * @param {string} password - psw
-     * @returns {string} - JWT.
+     * @param {object} parent - Parent/root object.
+     * @param {object} payload - username and password.
+     * @returns {string} - JWT token.
      */
-    login: (username, password) => {
-      console.log(username, password)
-      return 'JWT key' // UPDATE RETURN
+    login: async (parent, payload) => {
+      try {
+        const { username, password } = payload
+        let error
+
+        // Check that username and password is given.
+        if (!username) {
+          error = new Error('Username is missing')
+        } else if (!password) {
+          error = new Error('Password is missing')
+        } else if (!username && !password) {
+          error = new Error('Username and password is missing')
+        }
+
+        if (error) {
+          throw error
+        }
+
+        // Fetch the user from the database.
+        const query = 'SELECT * FROM User WHERE username = ?'
+        const response = await db.execute(query, [username])
+
+        const user = response[0][0]
+
+        // If the user doesn't exist throw an error.
+        if (!user) {
+          error = new Error('User does not exist')
+          throw error
+        }
+
+        // Compare the passwords against eachoter.
+        const comparedPasswords = await argon2.verify(user.password, password)
+
+        if (!comparedPasswords) {
+          error = new Error('Username or password is incorrect')
+          throw error
+        }
+
+        const JWTuser = { id: user.ID, username }
+
+        // Create access JWT token and return it.
+        const accessToken = await JsonWebToken.encodeUser(JWTuser,
+          process.env.JWT_KEY,
+          process.env.JWT_TTL
+        )
+
+        return accessToken
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
+    },
+
+    /**
+     * Delete an existing user.
+     *
+     * @param {object} parent - Parent/root object.
+     * @param {object} args - Argument object.
+     * @param {object} context - Context object.
+     * @returns {string} - Confirmation message.
+     */
+    deleteUser: (parent, args, context) => {
+      console.log(context)
+      return 'User deleted'
     }
   }
 }
