@@ -5,9 +5,11 @@
  * @version 1.0.0
  */
 
-import { db } from '../config/dbsettings.js'
+import { DatabaseHandler } from '../lib/databaseHandler.js'
 import { JsonWebToken } from '../lib/JsonWebToken.js'
 import argon2 from 'argon2'
+
+const DBHandler = new DatabaseHandler()
 
 export const userResolvers = {
   Query: {
@@ -61,15 +63,8 @@ export const userResolvers = {
         // Hash the password.
         const hashedPassword = await argon2.hash(password)
 
-        // Create the user in the database, if the user exist already throw an error.
-        const query = 'INSERT INTO User (username, password) VALUES (?, ?)'
-        const response = await db.execute(query, [username, hashedPassword])
-
-        if (!response) {
-          error = new Error('That username already exists, try again.')
-          error.status = 409
-          throw error
-        }
+        // Create a user in the database.
+        await DBHandler.createUser(username, hashedPassword)
 
         return 'A user was successfully created, login to get an authentication key!'
       } catch (error) {
@@ -103,17 +98,8 @@ export const userResolvers = {
           throw error
         }
 
-        // Fetch the user from the database.
-        const query = 'SELECT * FROM User WHERE username = ?'
-        const response = await db.execute(query, [username])
-
-        const user = response[0][0]
-
-        // If the user doesn't exist throw an error.
-        if (!user) {
-          error = new Error('User does not exist')
-          throw error
-        }
+        // Fetch the user.
+        const user = await DBHandler.getUser(username)
 
         // Compare the passwords against eachoter.
         const comparedPasswords = await argon2.verify(user.password, password)
@@ -128,7 +114,7 @@ export const userResolvers = {
         // Create access JWT token and return it.
         const accessToken = await JsonWebToken.encodeUser(JWTuser,
           process.env.JWT_KEY,
-          process.env.JWT_TTL
+          parseInt(process.env.JWT_TTL, 10)
         )
 
         return accessToken
@@ -146,9 +132,39 @@ export const userResolvers = {
      * @param {object} context - Context object.
      * @returns {string} - Confirmation message.
      */
-    deleteUser: (parent, args, context) => {
-      console.log(context)
-      return 'User deleted'
+    deleteUser: async (parent, args, context) => {
+      try {
+        const accessToken = context.token
+        let error
+
+        // If access token is missing throw an error.
+        if (!accessToken) {
+          error = new Error('JWT access token needed for this operation. Login to get it.')
+          error.status = 401
+          throw error
+        }
+
+        // Decode the JWT and check against the database.
+        const JWT = await JsonWebToken.decodeUser(accessToken, process.env.JWT_KEY)
+
+        // Get the user.
+        const user = await DBHandler.getUser(JWT.username)
+
+        // Check that the ID is correct.
+        if (JWT.id !== user.ID) {
+          error = new Error('Invalid access token')
+          error.status = 403
+          throw error
+        }
+
+        // If correct delete from the DB.
+        await DBHandler.deleteUser(user.ID)
+
+        return 'User successfully deleted'
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     }
   }
 }

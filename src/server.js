@@ -87,7 +87,7 @@ try {
       const authHeader = req.headers.authorization || ''
 
       // If the Authorization header exists and contains the Bearer token, extract the token.
-      const token = authHeader.startsWith('Bearer') ? authHeader.split(' ')[1] : null
+      const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null
 
       // Return the token in the context object (or null if not found)
       return { token }
