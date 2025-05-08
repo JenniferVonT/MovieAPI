@@ -277,7 +277,7 @@ export class MovieDatabaseHandler {
    */
   async getAllRatings (id) {
     // Get all ratings connected to the movie id.
-    const query = 'SELECT * FROM rating WHERE movie_id = ?'
+    const query = 'SELECT * FROM Rating WHERE movie_id = ?'
     const [result] = await db.execute(query, [id])
 
     if (result.length === 0) {

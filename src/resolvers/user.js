@@ -145,7 +145,7 @@ export const userResolvers = {
         // Compare to the given username, if they match delete the user.
         if (username === user.username) {
           // If correct delete from the DB.
-          await DBHandler.deleteUser(user.ID)
+          await DBHandler.deleteUser(user.id)
         }
 
         return 'User successfully deleted'

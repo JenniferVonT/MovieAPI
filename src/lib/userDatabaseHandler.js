@@ -57,7 +57,7 @@ export class UserDatabaseHandler {
    */
   async deleteUser (userID) {
     // Create the delete query.
-    const query = 'DELETE FROM User WHERE ID = ?'
+    const query = 'DELETE FROM User WHERE id = ?'
     const response = await db.execute(query, [userID])
 
     if (!response) {

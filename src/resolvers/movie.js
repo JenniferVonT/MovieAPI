@@ -70,15 +70,15 @@ export const movieResolvers = {
       if (rolesReq) {
         const roles = await DBHandler.getAllRoles(actor.id)
 
-        actor.Roles = []
+        actor.roles = []
 
         // Insert all the roles and their movies in the actor object.
         for (const role of roles) {
-          const [movie] = await DBHandler.getMovieByID(role.Movie_ID)
+          const [movie] = await DBHandler.getMovieByID(role.movie_id)
 
-          actor.Roles.push({
-            character: role.Character_name,
-            movie: movie.Title
+          actor.roles.push({
+            character: role.character_name,
+            movie: movie.title
           })
         }
       }
