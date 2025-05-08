@@ -18,11 +18,16 @@ export const movieResolvers = {
      * @returns {Array} - an array of all the movies.
      */
     movies: async () => {
-      // TO-DO: Implement method.
-      return [
-        { id: 101, title: 'The Matrix', releaseYear: 1999 },
-        { id: 102, title: 'Inception', releaseYear: 2010 }
-      ]
+      try {
+        // Fetch all movies.
+        const movieObj = await DBHandler.getAllMovies()
+        const movies = movieObj[0]
+
+        return movies
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**

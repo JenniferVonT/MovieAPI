@@ -11,5 +11,17 @@ import { db } from '../config/dbsettings.js'
  * A database handler class.
  */
 export class MovieDatabaseHandler {
+  /**
+   * Gets all movies.
+   *
+   * @returns {Array} the movie objects.
+   */
+  async getAllMovies () {
+    // Create query and fetch.
+    const query = 'SELECT * FROM Movie'
 
+    const movies = await db.execute(query)
+
+    return movies
+  }
 }

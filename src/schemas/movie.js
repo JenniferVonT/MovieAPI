@@ -7,20 +7,20 @@
 
 import { gql } from 'graphql-tag'
 
-// TO-DO: Update the correct queries!
 export const movieTypeDefs = gql`
   type Movie {
     id: ID!
-    title: String!
-    description: String!
-    release_year: Int!
+    Title: String!
+    Release_year: Int
+    Description: String
+    poster_path: String
   }
   
   type Actor {
     id: ID!
     name: String!
-    gender: String!
-    profile_path: String!
+    gender: String
+    profile_path: String
   }
 
   type Query {
