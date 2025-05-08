@@ -80,8 +80,25 @@ export const movieResolvers = {
      * @returns {string} - confirmation message.
      */
     addMovie: async (parent, payload, context) => {
-      // TO-DO: Implement method.
-      return 'Movie added!'
+      try {
+        // Authenticate the user.
+        const accessToken = context.token
+
+        const user = await authenticateUser(accessToken)
+
+        if (!user) {
+          throw new Error('Invalid access token')
+        }
+
+        const { title, releaseYear, genre } = payload
+
+        await DBHandler.addMovie(title, releaseYear, genre)
+
+        return 'Movie successfully added'
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**
