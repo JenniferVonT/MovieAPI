@@ -13,23 +13,6 @@ const DBHandler = new MovieDatabaseHandler()
 export const movieResolvers = {
   Query: {
     /**
-     * Fetch all the movies in the database.
-     *
-     * @returns {Array} - an array of all the movies.
-     */
-    movies: async () => {
-      try {
-        // Fetch all movies.
-        const movieObj = await DBHandler.getAllMovies()
-
-        return movieObj[0]
-      } catch (error) {
-        console.error(error)
-        throw error
-      }
-    },
-
-    /**
      * Fetch all the movies.
      *
      * @returns {Array} - an array of all the actors.
@@ -84,6 +67,42 @@ export const movieResolvers = {
       }
 
       return actor
+    },
+
+    /**
+     * Fetch all the movies in the database.
+     *
+     * @param {object} parent - Parent/root object.
+     * @param {object} args - The arguments passed to the query.
+     * @param {number} args.page - The page number to fetch.
+     * @param {number} args.limit - The number of items per page.
+     * @returns {Array} - an array of all the movies.
+     */
+    movies: async (parent, { page = 1, limit = 20 }) => {
+      try {
+        // Validate the input parameters
+        if (page < 1 || limit < 1) {
+          throw new Error('Page and limit must be greater than 0.')
+        } else if (limit > 500) {
+          throw new Error('max limit is 500')
+        }
+
+        const offset = (page - 1) * limit
+
+        // Fetch all movies.
+        const movieObj = await DBHandler.getMovies(limit, offset)
+
+        // and the amount of movies.
+        const total = await DBHandler.getTotalMovieCount()
+
+        return {
+          movies: movieObj,
+          total
+        }
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**

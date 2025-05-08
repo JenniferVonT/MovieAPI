@@ -12,17 +12,32 @@ import { db } from '../config/dbsettings.js'
  */
 export class MovieDatabaseHandler {
   /**
-   * Gets all movies.
+   * Gets all movies with pagination.
    *
+   * @param {number} limit - The amount of movies to fetch.
+   * @param {number} offset - The offset (page)
    * @returns {Array} the movie objects.
    */
-  async getAllMovies () {
+  async getMovies (limit, offset) {
     // Create query and fetch.
-    const query = 'SELECT * FROM Movie'
+    const query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
 
-    const movies = await db.execute(query)
+    const [movies] = await db.execute(query)
 
     return movies
+  }
+
+  /**
+   * Fetches the amount of movies in the database.
+   *
+   * @returns {number} - The amount of movies in the database.
+   */
+  async getTotalMovieCount () {
+    const query = 'SELECT COUNT(*) as count FROM Movie'
+
+    const [total] = await db.execute(query)
+
+    return total[0].count
   }
 
   /**
