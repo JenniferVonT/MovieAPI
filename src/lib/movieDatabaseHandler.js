@@ -24,4 +24,18 @@ export class MovieDatabaseHandler {
 
     return movies
   }
+
+  /**
+   * Gets all actors.
+   *
+   * @returns {Array} the actor objects.
+   */
+  async getAllActors () {
+    // Create query and fetch.
+    const query = 'SELECT * FROM Actor'
+
+    const actors = await db.execute(query)
+
+    return actors
+  }
 }

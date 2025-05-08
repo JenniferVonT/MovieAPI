@@ -18,9 +18,9 @@ export const movieTypeDefs = gql`
   
   type Actor {
     id: ID!
-    name: String!
-    gender: String
-    profile_path: String
+    Name: String!
+    Gender: Int
+    Profile_path: String
   }
 
   type Query {

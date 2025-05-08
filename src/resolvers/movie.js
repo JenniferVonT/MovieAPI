@@ -21,9 +21,8 @@ export const movieResolvers = {
       try {
         // Fetch all movies.
         const movieObj = await DBHandler.getAllMovies()
-        const movies = movieObj[0]
 
-        return movies
+        return movieObj[0]
       } catch (error) {
         console.error(error)
         throw error
@@ -36,11 +35,15 @@ export const movieResolvers = {
      * @returns {Array} - an array of all the actors.
      */
     actors: async () => {
-      // TO-DO: Implement method.
-      return [
-        { id: 5, name: 'Tom Hanks', Gender: 'Male', profile_path: './path/to/image' },
-        { id: 6, name: 'Jennifer Lawrence', Gender: 'Female', profile_path: './path/to/image' }
-      ]
+      try {
+        // Fetch all Actors.
+        const actorObj = await DBHandler.getAllActors()
+
+        return actorObj[0]
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     }
   },
 
