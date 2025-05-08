@@ -71,29 +71,153 @@ export class MovieDatabaseHandler {
 
     await db.execute(movieQ, [movieID, title, releaseYear, null, null])
 
+    // Create the genres if neccessary.
+    const checkGenre = await this.hasGenre(genre)
+
+    if (!checkGenre) {
+      await this.createGenre(genre)
+      await this.createMovieHasGenre(genre, movieID)
+    } else {
+      await this.createMovieHasGenre(genre, movieID)
+    }
+  }
+
+  /**
+   * Updates an existing movie in the database.
+   *
+   * @param {string} id - Movie id.
+   * @param {string} title - Movie title.
+   * @param {string} description - Movie desc.
+   * @param {string} releaseYear - Movie release year.
+   * @param {string} genre - Movie genre.
+   */
+  async updateMovie (id, title, description, releaseYear, genre) {
+    let error
+
+    // If id is missing throw an error.
+    if (!id) {
+      error = new Error('Invalid id')
+      throw error
+    }
+
+    // Check which attributes are present and build the query accordingly.
+    const fields = []
+    const values = []
+
+    if (typeof title !== 'undefined') {
+      fields.push('Title = ?')
+      values.push(title)
+    }
+
+    if (typeof description !== 'undefined') {
+      fields.push('Description = ?')
+      values.push(description)
+    }
+
+    if (typeof releaseYear !== 'undefined') {
+      fields.push('Release_year = ?')
+      values.push(releaseYear)
+    }
+
+    if (typeof genre !== 'undefined') {
+      // If the genre already exists...
+      const doesGenreExist = await this.hasGenre(genre)
+
+      if (doesGenreExist) {
+        // .. but doesn't have a movie connection, create the connection.
+        const connection = await this.hasMovieGenreConnection(genre, id)
+
+        if (!connection) {
+          await this.createMovieHasGenre(genre, id)
+        }
+      } else {
+        // Otherwise create the genre and connection.
+        await this.createGenre(genre)
+        await this.createMovieHasGenre(genre, id)
+      }
+    }
+
+    // Lastly update the movie entity.
+    if (fields.length !== 0) {
+      const updateMovieQuery = `UPDATE Movie SET ${fields.join(', ')} WHERE id = ?`
+
+      values.push(id)
+
+      await db.execute(updateMovieQuery, values)
+    }
+  }
+
+  /**
+   * Verifies if a genre already exists or not.
+   *
+   * @param {string} genre - The genre name.
+   * @returns {boolean} - True if it exists, False if not.
+   */
+  async hasGenre (genre) {
     // Check if it is a new genre.
     const genreQ = 'SELECT * FROM Genre WHERE UPPER(name) = UPPER(?)'
     const [genreResult] = await db.execute(genreQ, [genre])
 
-    let genreID
-
-    // If it doesn't already exist create it.
+    // If it doesn't already exist return false.
     if (genreResult.length === 0) {
-      // First create a unique ID.
-      const idGenreQuery = 'SELECT MAX(id) AS max_id FROM Genre'
-      const [result] = await db.execute(idGenreQuery)
-      const maxID = result[0].max_id || 0 // If no rows, default to 0
-      genreID = maxID + 1 // Increment ID.
-
-      // Create Genre row.
-      const createGenreQ = 'INSERT INTO Genre (id, name) VALUES (?,?)'
-      await db.execute(createGenreQ, [genreID, genre])
+      return false
     } else {
-      genreID = genreResult[0].id
+      return true
     }
+  }
 
-    // Create Movie_has_Genre entitiy.
+  /**
+   * Creates a genre entity in the database.
+   *
+   * @param {string} genre - name of the genre
+   */
+  async createGenre (genre) {
+    // First create a unique ID.
+    const idGenreQuery = 'SELECT MAX(id) AS max_id FROM Genre'
+    const [result] = await db.execute(idGenreQuery)
+    const maxID = result[0].max_id || 0 // If no rows, default to 0
+    const genreID = maxID + 1 // Increment ID.
+
+    // Create Genre row.
+    const createGenreQ = 'INSERT INTO Genre (id, name) VALUES (?,?)'
+    await db.execute(createGenreQ, [genreID, genre])
+  }
+
+  /**
+   * Check if the Movie_has_Genre entity exists.
+   *
+   * @param {string} genre - Genres name.
+   * @param {string} movieID - Movies unique id.
+   * @returns {boolean} - True if it exist, False if it don't
+   */
+  async hasMovieGenreConnection (genre, movieID) {
+    const genreQ = 'SELECT * FROM Genre WHERE UPPER(name) = UPPER(?)'
+    const [genreID] = await db.execute(genreQ, [genre])
+
+    const query = 'SELECT * FROM Movie_has_Genre WHERE Genre_ID = ? AND Movie_ID = ?'
+    const [result] = await db.execute(query, [genreID[0].id, movieID])
+
+    // If it doesn't exist return false, otherwise true.
+    if (result.length === 0) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  /**
+   * Create the connected entity between movies and genres in the db.
+   *
+   * @param {string} genre - Name of the genre.
+   * @param {string} movieID - The connected movies unique id.
+   */
+  async createMovieHasGenre (genre, movieID) {
+    // Get the genre id.
+    const idQuery = 'SELECT id FROM Genre WHERE UPPER(name) = UPPER(?)'
+    const [genreID] = await db.execute(idQuery, [genre])
+
+    // Create a Movie_has_Genre entity.
     const MhGQuery = 'INSERT INTO Movie_has_Genre (Genre_ID, Movie_ID) VALUE (?,?)'
-    await db.execute(MhGQuery, [genreID, movieID])
+    await db.execute(MhGQuery, [genreID[0].id, movieID])
   }
 }

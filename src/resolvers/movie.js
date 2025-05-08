@@ -110,8 +110,19 @@ export const movieResolvers = {
      * @returns {string} - confirmation message.
      */
     updateMovie: async (parent, payload, context) => {
-      // TO-DO: Implement method.
-      return 'Movie changed!'
+      try {
+        // Extract all the arguments
+        const { id, title, description, releaseYear, genre } = payload
+
+        // Query the database.
+        await DBHandler.updateMovie(id, title, description, releaseYear, genre)
+
+        // If no errors where thrown send a confirmation message.
+        return 'Movie successfully changed!'
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**
