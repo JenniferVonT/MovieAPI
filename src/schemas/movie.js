@@ -32,6 +32,19 @@ export const movieTypeDefs = gql`
     Profile_path: String
   }
 
+  type ActorWithRoles {
+    id: ID!
+    Name: String!
+    Gender: Int
+    Profile_path: String
+    Roles: [Role]
+  }
+
+  type Role {
+    character: String
+    movie: String
+  }
+
   type Rating {
     average: Float!,
     allRatings: [Float!]!
@@ -43,6 +56,7 @@ export const movieTypeDefs = gql`
   }
 
   type Mutation {
+    actor(name: String!): ActorWithRoles
     movie(id: ID!): MovieWithRatings
     addMovie(title: String!, releaseYear: Int!, genre: String!): String!
     updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): String!

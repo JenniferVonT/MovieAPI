@@ -40,6 +40,38 @@ export class MovieDatabaseHandler {
   }
 
   /**
+   * Fetch an actor by their full name.
+   *
+   * @param {string} name - The actors full name.
+   * @returns {object} - The actor object.
+   */
+  async getActorByName (name) {
+    // Make the query case insensitive by making the search in uppercase.
+    const query = 'SELECT * FROM Actor WHERE UPPER(Name) = UPPER(?)'
+    const [actor] = await db.execute(query, [name])
+
+    if (actor.length === 0) {
+      throw new Error('That actor does not exist in this database')
+    }
+
+    return actor
+  }
+
+  /**
+   * Fetches all the roles associated with an actor.
+   *
+   * @param {string} id - The actor id.
+   * @returns {Array} An array with all the roles
+   */
+  async getAllRoles (id) {
+    // Fetch all the actors roles.
+    const query = 'SELECT * FROM Role WHERE Actor_ID = ?'
+    const roles = await db.execute(query, [id])
+
+    return roles[0]
+  }
+
+  /**
    * Get a movie by its id.
    *
    * @param {string} id - movie id.
@@ -241,7 +273,7 @@ export class MovieDatabaseHandler {
    * Fetches all the ratings for a movie.
    *
    * @param {string} id - The movie id.
-   * @returns {array} - An array of all the ratings.
+   * @returns {object} - An array of all the ratings.
    */
   async getAllRatings (id) {
     // Get all ratings connected to the movie id.

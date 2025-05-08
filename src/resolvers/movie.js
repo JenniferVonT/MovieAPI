@@ -49,7 +49,45 @@ export const movieResolvers = {
 
   Mutation: {
     /**
-     * Fetch a specific movie.
+     * Fetch a specific actor (optional with their roles).
+     *
+     * @param {object} parent - Parent/root object.
+     * @param {object} payload - arguments.
+     * @param {object} context - The context object
+     * @param {object} info - The info object.
+     * @returns {object} - Movie object.
+     */
+    actor: async (parent, payload, context, info) => {
+      const { name } = payload
+
+      // Fetch the actor from the database.
+      const [actor] = await DBHandler.getActorByName(name)
+
+      // Check if roles are also requested (nested query)
+      const fieldNodes = info.fieldNodes
+      const rolesReq = fieldNodes.some(node => node.selectionSet && node.selectionSet.selections.some(sel => sel.name.value === 'Roles'))
+
+      if (rolesReq) {
+        const roles = await DBHandler.getAllRoles(actor.id)
+
+        actor.Roles = []
+
+        // Insert all the roles and their movies in the actor object.
+        for (const role of roles) {
+          const [movie] = await DBHandler.getMovieByID(role.Movie_ID)
+
+          actor.Roles.push({
+            character: role.Character_name,
+            movie: movie.Title
+          })
+        }
+      }
+
+      return actor
+    },
+
+    /**
+     * Fetch a specific movie (optional nested with ratings.).
      *
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.
