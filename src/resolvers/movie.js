@@ -111,6 +111,15 @@ export const movieResolvers = {
      */
     updateMovie: async (parent, payload, context) => {
       try {
+        // Authenticate the user.
+        const accessToken = context.token
+
+        const user = await authenticateUser(accessToken)
+
+        if (!user) {
+          throw new Error('Invalid access token')
+        }
+
         // Extract all the arguments
         const { id, title, description, releaseYear, genre } = payload
 
