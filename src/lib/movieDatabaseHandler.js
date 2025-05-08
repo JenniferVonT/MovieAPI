@@ -43,15 +43,30 @@ export class MovieDatabaseHandler {
   /**
    * Gets all actors.
    *
-   * @returns {Array} the actor objects.
+   * @param {number} limit - The amount of movies to fetch.
+   * @param {number} offset - The offset (page)
+   * @returns {Array} the movie objects.
    */
-  async getAllActors () {
+  async getActors (limit, offset) {
     // Create query and fetch.
-    const query = 'SELECT * FROM Actor'
+    const query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
 
-    const actors = await db.execute(query)
+    const [actors] = await db.execute(query)
 
     return actors
+  }
+
+  /**
+   * Fetches the amount of actors in the database.
+   *
+   * @returns {number} - The amount of actors in the database.
+   */
+  async getTotalActorCount () {
+    const query = 'SELECT COUNT(*) as count FROM Actor'
+
+    const [total] = await db.execute(query)
+
+    return total[0].count
   }
 
   /**

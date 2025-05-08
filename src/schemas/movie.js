@@ -37,6 +37,11 @@ export const movieTypeDefs = gql`
     profile_path: String
   }
 
+  type PaginatedActors {
+    actors: [Actor]
+    total: Int
+  }
+
   type ActorWithRoles {
     id: ID!
     name: String!
@@ -55,11 +60,8 @@ export const movieTypeDefs = gql`
     allRatings: [Float!]!
   }
 
-  type Query {
-    actors: [Actor]
-  }
-
   type Mutation {
+    actors(page: Int, limit: Int): PaginatedActors
     actor(name: String!): ActorWithRoles
     movies(page: Int, limit: Int): PaginatedMovies
     movie(id: ID!): MovieWithRatings

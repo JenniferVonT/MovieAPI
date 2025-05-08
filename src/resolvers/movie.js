@@ -11,26 +11,43 @@ import { MovieDatabaseHandler } from '../lib/movieDatabaseHandler.js'
 const DBHandler = new MovieDatabaseHandler()
 
 export const movieResolvers = {
-  Query: {
-    /**
-     * Fetch all the movies.
-     *
-     * @returns {Array} - an array of all the actors.
-     */
-    actors: async () => {
+  Mutation: {
+  /**
+   * Fetch all the movies with pagination.
+   *
+   * @param {object} parent - Parent/root object.
+   * @param {object} args - The arguments passed to the query.
+   * @param {number} args.page - The page number to fetch.
+   * @param {number} args.limit - The number of items per page.
+   * @returns {object} - an object of all the actors.
+   */
+    actors: async (parent, { page = 1, limit = 20 }) => {
       try {
-        // Fetch all Actors.
-        const actorObj = await DBHandler.getAllActors()
+        // Validate the input parameters
+        if (page < 1 || limit < 1) {
+          throw new Error('Page and limit must be greater than 0.')
+        } else if (limit > 500) {
+          throw new Error('max limit is 500')
+        }
 
-        return actorObj[0]
+        const offset = (page - 1) * limit
+
+        // Fetch all actors with limits.
+        const actors = await DBHandler.getActors(limit, offset)
+
+        // and the amount of actors.
+        const total = await DBHandler.getTotalActorCount()
+
+        return {
+          actors,
+          total
+        }
       } catch (error) {
         console.error(error)
         throw error
       }
-    }
-  },
+    },
 
-  Mutation: {
     /**
      * Fetch a specific actor (optional with their roles).
      *
@@ -76,7 +93,7 @@ export const movieResolvers = {
      * @param {object} args - The arguments passed to the query.
      * @param {number} args.page - The page number to fetch.
      * @param {number} args.limit - The number of items per page.
-     * @returns {Array} - an array of all the movies.
+     * @returns {object} - an object of all the movies.
      */
     movies: async (parent, { page = 1, limit = 20 }) => {
       try {
@@ -90,13 +107,13 @@ export const movieResolvers = {
         const offset = (page - 1) * limit
 
         // Fetch all movies.
-        const movieObj = await DBHandler.getMovies(limit, offset)
+        const movies = await DBHandler.getMovies(limit, offset)
 
         // and the amount of movies.
         const total = await DBHandler.getTotalMovieCount()
 
         return {
-          movies: movieObj,
+          movies,
           total
         }
       } catch (error) {
