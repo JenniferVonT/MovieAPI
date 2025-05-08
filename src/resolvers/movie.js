@@ -84,11 +84,7 @@ export const movieResolvers = {
         // Authenticate the user.
         const accessToken = context.token
 
-        const user = await authenticateUser(accessToken)
-
-        if (!user) {
-          throw new Error('Invalid access token')
-        }
+        await authenticateUser(accessToken)
 
         const { title, releaseYear, genre } = payload
 
@@ -114,11 +110,7 @@ export const movieResolvers = {
         // Authenticate the user.
         const accessToken = context.token
 
-        const user = await authenticateUser(accessToken)
-
-        if (!user) {
-          throw new Error('Invalid access token')
-        }
+        await authenticateUser(accessToken)
 
         // Extract all the arguments
         const { id, title, description, releaseYear, genre } = payload
@@ -143,8 +135,23 @@ export const movieResolvers = {
      * @returns {string} - confirmation message.
      */
     deleteMovie: async (parent, payload, context) => {
-      // TO-DO: Implement method.
-      return 'Movie deleted!'
+      try {
+        // Authenticate the user.
+        const accessToken = context.token
+
+        await authenticateUser(accessToken)
+
+        // Extract the id.
+        const { id } = payload
+
+        // Query the database to remove the movie.
+        await DBHandler.deleteMovie(id)
+
+        return 'Movie successfully deleted!'
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**

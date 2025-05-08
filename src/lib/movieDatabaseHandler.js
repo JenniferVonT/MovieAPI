@@ -148,6 +148,22 @@ export class MovieDatabaseHandler {
   }
 
   /**
+   * Deletes a movie from the database.
+   *
+   * @param {string} id - The movie id.
+   */
+  async deleteMovie (id) {
+    // Delete the movie.
+    const query = 'DELETE FROM Movie WHERE id = ?'
+    const [result] = await db.execute(query, [id])
+
+    // Check if the movie table was affected or not.
+    if (result.affectedRows === 0) {
+      throw new Error('Something went wrong, could not delete movie')
+    }
+  }
+
+  /**
    * Verifies if a genre already exists or not.
    *
    * @param {string} genre - The genre name.
