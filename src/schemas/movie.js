@@ -23,6 +23,11 @@ export const movieTypeDefs = gql`
     Profile_path: String
   }
 
+  type Rating {
+    average: Float!,
+    allRatings: [Float!]!
+  }
+
   type Query {
     movies: [Movie]
     actors: [Actor]
@@ -33,6 +38,6 @@ export const movieTypeDefs = gql`
     addMovie(title: String!, releaseYear: Int!, genre: String!): String!
     updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): String!
     deleteMovie(id: ID!): String!
-    ratings(movie_id: ID!): String!
+    ratings(movieId: ID!): Rating!
   }
 `

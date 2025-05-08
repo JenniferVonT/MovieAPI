@@ -162,8 +162,38 @@ export const movieResolvers = {
      * @returns {string} - confirmation message.
      */
     ratings: async (parent, payload) => {
-      // TO-DO: Implement method.
-      return 'Star Wars rating: 4.5/5 (2.4K)'
+      try {
+        // Extract the id.
+        const { movieId } = payload
+
+        // Get all the ratings for the movie.
+        const response = await DBHandler.getAllRatings(movieId)
+
+        // Calculate the average score and extract the individual ratings.
+        let total = 0
+        const ratings = []
+
+        response.forEach(res => {
+          // Make sure that the number is a number and not a string.
+          const num = parseFloat(res.Rating)
+
+          if (!isNaN(num)) {
+            total += num
+            ratings.push(num)
+          }
+        })
+
+        const average = parseFloat((total / ratings.length).toFixed(1))
+
+        // Return the finished Rating object.
+        return {
+          average,
+          allRatings: ratings
+        }
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     }
   }
 }

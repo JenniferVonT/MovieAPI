@@ -236,4 +236,22 @@ export class MovieDatabaseHandler {
     const MhGQuery = 'INSERT INTO Movie_has_Genre (Genre_ID, Movie_ID) VALUE (?,?)'
     await db.execute(MhGQuery, [genreID[0].id, movieID])
   }
+
+  /**
+   * Fetches all the ratings for a movie.
+   *
+   * @param {string} id - The movie id.
+   * @returns {array} - An array of all the ratings.
+   */
+  async getAllRatings (id) {
+    // Get all ratings connected to the movie id.
+    const query = 'SELECT * FROM Rating WHERE Movie_ID = ?'
+    const [result] = await db.execute(query, [id])
+
+    if (result.length === 0) {
+      throw new Error('That movie does not exist or there is no ratings for that movie yet!')
+    }
+
+    return result
+  }
 }
