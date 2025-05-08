@@ -65,7 +65,7 @@ export const movieResolvers = {
 
       // Check if roles are also requested (nested query)
       const fieldNodes = info.fieldNodes
-      const rolesReq = fieldNodes.some(node => node.selectionSet && node.selectionSet.selections.some(sel => sel.name.value === 'Roles'))
+      const rolesReq = fieldNodes.some(node => node.selectionSet && node.selectionSet.selections.some(sel => sel.name.value === 'roles'))
 
       if (rolesReq) {
         const roles = await DBHandler.getAllRoles(actor.id)

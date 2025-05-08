@@ -10,34 +10,34 @@ import { gql } from 'graphql-tag'
 export const movieTypeDefs = gql`
   type Movie {
     id: ID!
-    Title: String!
-    Release_year: Int
-    Description: String
+    title: String!
+    release_year: Int
+    description: String
     poster_path: String
   }
 
   type MovieWithRatings {
     id: ID!
-    Title: String!
-    Release_year: Int
-    Description: String
+    title: String!
+    release_year: Int
+    description: String
     poster_path: String
     ratings: Rating
   }
   
   type Actor {
     id: ID!
-    Name: String!
-    Gender: Int
-    Profile_path: String
+    name: String!
+    gender: Int
+    profile_path: String
   }
 
   type ActorWithRoles {
     id: ID!
-    Name: String!
-    Gender: Int
-    Profile_path: String
-    Roles: [Role]
+    name: String!
+    gender: Int
+    profile_path: String
+    roles: [Role]
   }
 
   type Role {

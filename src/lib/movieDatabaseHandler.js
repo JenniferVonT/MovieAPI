@@ -47,7 +47,7 @@ export class MovieDatabaseHandler {
    */
   async getActorByName (name) {
     // Make the query case insensitive by making the search in uppercase.
-    const query = 'SELECT * FROM Actor WHERE UPPER(Name) = UPPER(?)'
+    const query = 'SELECT * FROM Actor WHERE UPPER(name) = UPPER(?)'
     const [actor] = await db.execute(query, [name])
 
     if (actor.length === 0) {
@@ -65,7 +65,7 @@ export class MovieDatabaseHandler {
    */
   async getAllRoles (id) {
     // Fetch all the actors roles.
-    const query = 'SELECT * FROM Role WHERE Actor_ID = ?'
+    const query = 'SELECT * FROM Role WHERE actor_id = ?'
     const roles = await db.execute(query, [id])
 
     return roles[0]
@@ -99,7 +99,7 @@ export class MovieDatabaseHandler {
     const movieID = maxID + 1 // Increment ID.
 
     // Create movie in db.
-    const movieQ = 'INSERT INTO Movie (id, Title, Release_year, Description, poster_path) VALUES (?,?,?,?,?)'
+    const movieQ = 'INSERT INTO Movie (id, title, release_year, description, poster_path) VALUES (?,?,?,?,?)'
 
     await db.execute(movieQ, [movieID, title, releaseYear, null, null])
 
@@ -137,17 +137,17 @@ export class MovieDatabaseHandler {
     const values = []
 
     if (typeof title !== 'undefined') {
-      fields.push('Title = ?')
+      fields.push('title = ?')
       values.push(title)
     }
 
     if (typeof description !== 'undefined') {
-      fields.push('Description = ?')
+      fields.push('description = ?')
       values.push(description)
     }
 
     if (typeof releaseYear !== 'undefined') {
-      fields.push('Release_year = ?')
+      fields.push('release_year = ?')
       values.push(releaseYear)
     }
 
@@ -242,7 +242,7 @@ export class MovieDatabaseHandler {
     const genreQ = 'SELECT * FROM Genre WHERE UPPER(name) = UPPER(?)'
     const [genreID] = await db.execute(genreQ, [genre])
 
-    const query = 'SELECT * FROM Movie_has_Genre WHERE Genre_ID = ? AND Movie_ID = ?'
+    const query = 'SELECT * FROM Movie_has_Genre WHERE genre_id = ? AND movie_id = ?'
     const [result] = await db.execute(query, [genreID[0].id, movieID])
 
     // If it doesn't exist return false, otherwise true.
@@ -265,7 +265,7 @@ export class MovieDatabaseHandler {
     const [genreID] = await db.execute(idQuery, [genre])
 
     // Create a Movie_has_Genre entity.
-    const MhGQuery = 'INSERT INTO Movie_has_Genre (Genre_ID, Movie_ID) VALUE (?,?)'
+    const MhGQuery = 'INSERT INTO Movie_has_Genre (genre_id, movie_id) VALUE (?,?)'
     await db.execute(MhGQuery, [genreID[0].id, movieID])
   }
 
@@ -277,7 +277,7 @@ export class MovieDatabaseHandler {
    */
   async getAllRatings (id) {
     // Get all ratings connected to the movie id.
-    const query = 'SELECT * FROM Rating WHERE Movie_ID = ?'
+    const query = 'SELECT * FROM rating WHERE movie_id = ?'
     const [result] = await db.execute(query, [id])
 
     if (result.length === 0) {
@@ -290,7 +290,7 @@ export class MovieDatabaseHandler {
 
     result.forEach(res => {
       // Make sure that the number is a number and not a string.
-      const num = parseFloat(res.Rating)
+      const num = parseFloat(res.rating)
 
       if (!isNaN(num)) {
         total += num
