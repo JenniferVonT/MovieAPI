@@ -53,18 +53,32 @@ export const movieResolvers = {
      *
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.
+     * @param {object} context - The context object
+     * @param {object} info - The info object.
      * @returns {object} - Movie object.
      */
-    movie: async (parent, payload) => {
+    movie: async (parent, payload, context, info) => {
       try {
-        // Fetch movie based on id.
-        const movie = await DBHandler.getMovieByID(payload.id)
+        const id = payload.id
 
-        if (!movie) {
+        // Fetch movie based on id.
+        const [movie] = await DBHandler.getMovieByID(id)
+
+        if (!movie || movie.length === 0) {
           throw new Error('Movie does not exist!')
         }
 
-        return movie[0]
+        // Check if ratings are also requested (nested query)
+        const fieldNodes = info.fieldNodes
+        const ratingReq = fieldNodes.some(node => node.selectionSet && node.selectionSet.selections.some(sel => sel.name.value === 'ratings'))
+
+        // If it is include it in the response.
+        if (ratingReq) {
+          const ratings = await DBHandler.getAllRatings(id)
+          movie.ratings = ratings
+        }
+
+        return movie
       } catch (error) {
         console.error(error)
         throw error
@@ -167,29 +181,10 @@ export const movieResolvers = {
         const { movieId } = payload
 
         // Get all the ratings for the movie.
-        const response = await DBHandler.getAllRatings(movieId)
-
-        // Calculate the average score and extract the individual ratings.
-        let total = 0
-        const ratings = []
-
-        response.forEach(res => {
-          // Make sure that the number is a number and not a string.
-          const num = parseFloat(res.Rating)
-
-          if (!isNaN(num)) {
-            total += num
-            ratings.push(num)
-          }
-        })
-
-        const average = parseFloat((total / ratings.length).toFixed(1))
+        const ratings = await DBHandler.getAllRatings(movieId)
 
         // Return the finished Rating object.
-        return {
-          average,
-          allRatings: ratings
-        }
+        return ratings
       } catch (error) {
         console.error(error)
         throw error

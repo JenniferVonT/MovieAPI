@@ -15,6 +15,15 @@ export const movieTypeDefs = gql`
     Description: String
     poster_path: String
   }
+
+  type MovieWithRatings {
+    id: ID!
+    Title: String!
+    Release_year: Int
+    Description: String
+    poster_path: String
+    ratings: Rating
+  }
   
   type Actor {
     id: ID!
@@ -34,7 +43,7 @@ export const movieTypeDefs = gql`
   }
 
   type Mutation {
-    movie(id: ID!): Movie
+    movie(id: ID!): MovieWithRatings
     addMovie(title: String!, releaseYear: Int!, genre: String!): String!
     updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): String!
     deleteMovie(id: ID!): String!
