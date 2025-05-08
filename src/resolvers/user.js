@@ -129,18 +129,24 @@ export const userResolvers = {
      * Delete an existing user.
      *
      * @param {object} parent - Parent/root object.
-     * @param {object} args - Argument object.
+     * @param {object} payload - Argument object.
      * @param {object} context - Context object.
      * @returns {string} - Confirmation message.
      */
-    deleteUser: async (parent, args, context) => {
+    deleteUser: async (parent, payload, context) => {
       try {
+        // Check for a valid JWT token.
         const accessToken = context.token
 
         const user = await authenticateUser(accessToken)
 
-        // If correct delete from the DB.
-        await DBHandler.deleteUser(user.ID)
+        const { username } = payload
+
+        // Compare to the given username, if they match delete the user.
+        if (username === user.username) {
+          // If correct delete from the DB.
+          await DBHandler.deleteUser(user.ID)
+        }
 
         return 'User successfully deleted'
       } catch (error) {

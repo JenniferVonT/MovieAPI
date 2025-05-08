@@ -20,6 +20,6 @@ export const userTypeDefs = gql`
   type Mutation {
     newUser(username: String!, password: String!): String!
     login(username: String!, password: String!): String!
-    deleteUser: String!
+    deleteUser(username: String!): String!
   }
 `
