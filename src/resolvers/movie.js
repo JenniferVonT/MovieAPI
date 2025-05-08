@@ -56,9 +56,19 @@ export const movieResolvers = {
      * @returns {object} - Movie object.
      */
     movie: async (parent, payload) => {
-      // TO-DO: Implement method.
-      const movie = { id: 101, title: 'The Matrix', releaseYear: 1999 }
-      return movie
+      try {
+        // Fetch movie based on id.
+        const movie = await DBHandler.getMovieByID(payload.id)
+
+        if (!movie) {
+          throw new Error('Movie does not exist!')
+        }
+
+        return movie[0]
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     /**

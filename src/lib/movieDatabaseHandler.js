@@ -38,4 +38,17 @@ export class MovieDatabaseHandler {
 
     return actors
   }
+
+  /**
+   * Get a movie by its id.
+   *
+   * @param {string} id - movie id.
+   * @returns {object} - Movie object.
+   */
+  async getMovieByID (id) {
+    const query = 'SELECT * FROM Movie WHERE id = ?'
+
+    const movie = await db.execute(query, [id])
+    return movie[0]
+  }
 }
