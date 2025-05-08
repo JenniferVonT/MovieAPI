@@ -20,12 +20,7 @@ export const userResolvers = {
      * @returns {string} - information.
      */
     userOperations: () => {
-      return `Available operations for user is: 
-              - newUser(username: String!, password: String!)
-                  Create a new user to be able to modify movies,
-              - login(username: String!, password: String!): JWT!
-                  Login to a user to get a JWT key for authentication.
-              `
+      return 'Available operations for user is: - newUser(username: String!, password: String!): String! - login(username: String!, password: String!): String! (JWT!)'
     }
   },
 

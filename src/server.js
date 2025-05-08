@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-undefined-types */
 /**
  * @file Defines the main application.
  * @module src/server
@@ -52,6 +53,8 @@ try {
   const graphqlServer = new ApolloServer({
     typeDefs,
     resolvers,
+    introspection: true,
+    playground: true,
     /**
      * Set up a custom error handler, only show pertinent information in production.
      *
