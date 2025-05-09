@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b3e6b969-dfea-46c8-99f9-2e432809d496",
+		"_postman_id": "df15067d-a6ea-4cf8-a20b-05e21c783f32",
 		"name": "MovieAPI",
 		"description": "The movieAPI provides many API operations that enable you to manage movies seamlessly through the graphQL language/interface. Create, update and delete movies of your choice, get data on thousands of actors and movies in seconds.\n\n## **Getting started guide**\n\nTo start using the movieAPI, you need to -\n\n- The operations requiring authentication need a JWT bearer token in the header, which you can read about how to get under the authentication section\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- The API returns request responses in application/JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n- The API only uses one endpoint for operations and can be reached at: [https://cscloud6-72.lnu.se/movieAPI/graphql](https://cscloud6-72.lnu.se/movieAPI/graphql)\n    \n- To check the status of the API, you can query /health, which returns a 200 status code if the server is up and running.\n    \n\n## Authentication\n\nThe movieAPI uses JWT bearer tokens for authentication.\n\nTo get a JWT token, you need to run the newUser and login operations with a username and password. If a user already exists, the login operation is enough, it will only return a JWT token, which is valid for 12 hours.\n\nFor all operations that create, edit, and delete a resource, you will need to supply the JWT bearer token in the header of your request. The read-only queries and mutations do not need any authentication.\n\n### Authentication error response\n\nIf an API token is missing, malformed, or invalid, you will receive an HTTP 401 or 403 Unauthorized response code.\n\n## Rate and usage limits\n\nAt the moment there is no rate or usage limits.\n\n## Operations\n\n`** = requires authentication with a JWT token.`\n\n`! = required parameter`\n\nMutations/Queries:\n\n#### User:\n\n- newUser(username: String, password: String): Creates a new user.\n    \n- login(username: String, password: String): Returns a JWT access token.\n    \n- deleteUser(username): ** Deletes a user completely from the database.\n    \n\n---\n\n#### Movies/Actors:\n\n- actors(page: Int, limit: Int): Returns a array of actors, default page/limit is 1/20.\n    \n- actor(name: String!): Returns an object with information about an actor.\n    \n- movies(page: Int, limit: Int): Returns an object with a list of movies, default page/limit is 1/20.\n    \n- movie(id: ID!): Returns an object with information about a movie.\n    \n- ratings(movieId: ID!): Returns an object with the ratings (all and average).\n    \n- addMovie(title: String!, releaseYear: Int!, genre: String!): ** Creates a movie in the database.\n    \n- updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): ** Updates an existing movie.\n    \n- deleteMovie(id: ID!): ** Deletes an existing movie.\n    \n\nHere is an example of the movie operation that fetches a movie with all available information.\n\n``` graphql\nmutation Movie {\n    movie(id: \"24\") {\n        id\n        title\n        release_year\n        description\n        poster_path\n    }\n}\n\n ```\n\n#### Nested queries\n\nThere is some nested queries available\n\n- actor nested with roles: get data on an actor and include all of their movie roles.\n    \n- movie nested with ratings: get data on a movie and include their rating.\n    \n\nExample of a nested actor/roles operation:\n\n``` graphql\nmutation Actor {\n    actor(name: \"tom hanks\") {\n        id\n        name\n        gender\n        profile_path\n        roles {\n            character\n            movie\n        }\n    }\n}\n\n ```\n\n### **Need some help?**\n\nThis API is available as a playground/sandbox at [https://studio.apollographql.com/graph/movieAPI/variant/current/home](https://studio.apollographql.com/graph/movieAPI/variant/current/home), when entering the site you will need an apollo account and click the \"Run in Explorer\" button in the top right corner. There you can try out all of the available operations.\n\nTo check out the API source code visit [https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design](https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design)\n\nIf you want to host your own API server there is database seed scripts in the source code repository that works on a mysql 8:0 server. They include both the built of the database tables and populates with data, just run the createdb.sql and then the import_all.sql inside your SQL database.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -18,6 +18,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has a success message.\r",
 									"pm.test(\"newUser response contains a success message\", function () {\r",
@@ -62,6 +67,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"newUser response contains an error message\", function () {\r",
@@ -108,6 +118,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has a JWT token\r",
 									"pm.test(\"Response contains a non-empty login token\", function () {\r",
@@ -160,6 +175,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"login response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -181,8 +201,11 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
-								"type": "text/javascript"
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -218,6 +241,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"movies object\", function () {\r",
@@ -280,6 +308,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"movies response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -326,6 +359,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"movie object\", function () {\r",
@@ -383,6 +421,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"movie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -430,6 +473,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"Add movie success message\", function () {\r",
@@ -494,6 +542,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"addmovie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -551,6 +604,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response object contains the right message.\r",
 									"pm.test(\"Update movie success message\", function () {\r",
@@ -612,6 +670,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"updatemovie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -670,17 +733,22 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response object contains the right message.\r",
 									"pm.test(\"Delete movie success message\", function () {\r",
 									"    pm.expect(jsonData.data).to.have.property(\"deleteMovie\");\r",
 									"    \r",
 									"    let message = jsonData.data.deleteMovie;\r",
-									"    pm.expect(message).to.eql('Movie successfully changed!');\r",
+									"    pm.expect(message).to.eql('Movie successfully deleted!');\r",
 									"});\r",
 									"\r",
 									"// update the env.\r",
 									"if (jsonData.data) {\r",
-									"  pm.collectionVariables.set(\"id\", \"\");\r",
+									"  pm.collectionVariables.set(\"movie_id\", \"\");\r",
 									"  pm.collectionVariables.set(\"title\", \"\");\r",
 									"  pm.collectionVariables.set(\"release_year\", \"\");\r",
 									"  pm.collectionVariables.set(\"description\", \"\");\r",
@@ -731,6 +799,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"delete movie response contains an error message\", function () {\r",
@@ -790,6 +863,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"Ratings object attributes\", function () {\r",
 									"    pm.expect(jsonData.data.ratings).to.have.property(\"average\");\r",
@@ -837,6 +915,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"ratings response contains an error message\", function () {\r",
@@ -891,6 +974,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"Actor object contains correct attributes\", function () {\r",
 									"    pm.expect(jsonData.data).to.have.property(\"actor\");\r",
@@ -944,6 +1032,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"actor response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
@@ -995,6 +1088,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"actors object\", function () {\r",
 									"    pm.expect(jsonData.data.actors).to.have.property(\"total\");\r",
@@ -1045,11 +1143,15 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"actors response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -1100,6 +1202,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"movie object have correct attributes\", function () {\r",
@@ -1163,6 +1270,11 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
 									"// Test: Response object contains the right attributes.\r",
 									"pm.test(\"Actor object contains correct attributes\", function () {\r",
 									"    pm.expect(jsonData.data).to.have.property(\"actor\");\r",
@@ -1218,7 +1330,7 @@
 			]
 		},
 		{
-			"name": "last",
+			"name": "deleteUser - last!",
 			"item": [
 				{
 					"name": "deleteUser-success",
@@ -1228,6 +1340,11 @@
 							"script": {
 								"exec": [
 									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
 									"\r",
 									"// Test: Response has a success message.\r",
 									"pm.test(\"deleteUser response contains a success message\", function () {\r",
@@ -1279,17 +1396,23 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
-									"// Test: Response object contains the right attributes.\r",
-									"pm.test(\"delete user object\", function () {\r",
-									"    pm.expect(jsonData.data).to.have.property(\"deleteUser\");\r",
+									"// Test status code.\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"// Test: That the attribute has the right value.\r",
-									"pm.test(\"delete user response has correct value\", function () {\r",
-									"    let message = jsonData.data.deleteUser;\r",
+									"// Test: Response has an error message.\r",
+									"pm.test(\"delete user response contains an error message\", function () {\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
+									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
+									"});\r",
 									"\r",
-									"    pm.expect(message).to.eql('User successfully deleted');\r",
-									"});"
+									"pm.test(\"delete user response contains correct message\", function () {\r",
+									"    // Check the attribute value\r",
+									"    let message = jsonData.errors[0].message;\r",
+									"    pm.expect(message).to.eql('User does not exist');\r",
+									"})\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1350,45 +1473,5 @@
 			}
 		}
 	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "https://cscloud6-72.lnu.se/movieAPI/graphql",
-			"type": "string"
-		},
-		{
-			"key": "JWT",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "movie_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "title",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "description",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "poster_path",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "release_year",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "id",
-			"value": ""
-		}
-	]
+	"variable": []
 }

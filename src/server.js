@@ -66,7 +66,7 @@ try {
       if (process.env.NODE_ENV === 'production') {
         return {
           message: error.message,
-          code: error.extensions?.code || 'INTERNAL_SERVER_ERROR'
+          code: error.extensions?.code || 'ERROR'
         }
       }
 
