@@ -1,0 +1,686 @@
+{
+	"info": {
+		"_postman_id": "b3e6b969-dfea-46c8-99f9-2e432809d496",
+		"name": "MovieAPI",
+		"description": "The movieAPI provides many API operations that enable you to manage movies seamlessly through the graphQL language/interface. Create, update and delete movies of your choice, get data on thousands of actors and movies in seconds.\n\n## **Getting started guide**\n\nTo start using the movieAPI, you need to -\n\n- The operations requiring authentication need a JWT bearer token in the header, which you can read about how to get under the authentication section\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- The API returns request responses in application/JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n- The API only uses one endpoint for operations and can be reached at: [https://cscloud6-72.lnu.se/movieAPI/graphql](https://cscloud6-72.lnu.se/movieAPI/graphql)\n    \n- To check the status of the API, you can query /health, which returns a 200 status code if the server is up and running.\n    \n\n## Authentication\n\nThe movieAPI uses JWT bearer tokens for authentication.\n\nTo get a JWT token, you need to run the newUser and login operations with a username and password. If a user already exists, the login operation is enough, it will only return a JWT token, which is valid for 12 hours.\n\nFor all operations that create, edit, and delete a resource, you will need to supply the JWT bearer token in the header of your request. The read-only queries and mutations do not need any authentication.\n\n### Authentication error response\n\nIf an API token is missing, malformed, or invalid, you will receive an HTTP 401 or 403 Unauthorized response code.\n\n## Rate and usage limits\n\nAt the moment there is no rate or usage limits.\n\n## Operations\n\n`** = requires authentication with a JWT token.`\n\n`! = required parameter`\n\nMutations/Queries:\n\n#### User:\n\n- newUser(username: String, password: String): Creates a new user.\n    \n- login(username: String, password: String): Returns a JWT access token.\n    \n- deleteUser(username): ** Deletes a user completely from the database.\n    \n\n---\n\n#### Movies/Actors:\n\n- actors(page: Int, limit: Int): Returns a array of actors, default page/limit is 1/20.\n    \n- actor(name: String!): Returns an object with information about an actor.\n    \n- movies(page: Int, limit: Int): Returns an object with a list of movies, default page/limit is 1/20.\n    \n- movie(id: ID!): Returns an object with information about a movie.\n    \n- ratings(movieId: ID!): Returns an object with the ratings (all and average).\n    \n- addMovie(title: String!, releaseYear: Int!, genre: String!): ** Creates a movie in the database.\n    \n- updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): ** Updates an existing movie.\n    \n- deleteMovie(id: ID!): ** Deletes an existing movie.\n    \n\nHere is an example of the movie operation that fetches a movie with all available information.\n\n``` graphql\nmutation Movie {\n    movie(id: \"24\") {\n        id\n        title\n        release_year\n        description\n        poster_path\n    }\n}\n\n ```\n\n#### Nested queries\n\nThere is some nested queries available\n\n- actor nested with roles: get data on an actor and include all of their movie roles.\n    \n- movie nested with ratings: get data on a movie and include their rating.\n    \n\nExample of a nested actor/roles operation:\n\n``` graphql\nmutation Actor {\n    actor(name: \"tom hanks\") {\n        id\n        name\n        gender\n        profile_path\n        roles {\n            character\n            movie\n        }\n    }\n}\n\n ```\n\n### **Need some help?**\n\nThis API is available as a playground/sandbox at [https://studio.apollographql.com/graph/movieAPI/variant/current/home](https://studio.apollographql.com/graph/movieAPI/variant/current/home), when entering the site you will need an apollo account and click the \"Run in Explorer\" button in the top right corner. There you can try out all of the available operations.\n\nTo check out the API source code visit [https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design](https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design)\n\nIf you want to host your own API server there is database seed scripts in the source code repository that works on a mysql 8:0 server. They include both the built of the database tables and populates with data, just run the createdb.sql and then the import_all.sql inside your SQL database.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34049622"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "newUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response has a success message.\r",
+									"pm.test(\"newUser response contains a success message\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"newUser\");\r",
+									"    let message = jsonData.data.newUser;\r",
+									"    pm.expect(message).to.eql('A user was successfully created, login to get an authentication key!');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation NewUser {\r\n    newUser(username: \"testUser\", password: \"password123\")\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response has a JWT token\r",
+									"pm.test(\"Response contains a non-empty login token\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"login\");\r",
+									"    let token = jsonData.data.login;\r",
+									"    pm.expect(token).to.not.be.null;\r",
+									"    pm.expect(token).to.not.be.undefined;\r",
+									"    pm.expect(token).to.not.eql('');\r",
+									"});\r",
+									"\r",
+									"if (jsonData.data && jsonData.data.login) {\r",
+									"  let token = jsonData.data.login;\r",
+									"  pm.collectionVariables.set(\"JWT\", token);\r",
+									"  console.log(\"JWT saved:\", token);\r",
+									"} else {\r",
+									"  console.warn(\"Token not found in response.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Login {\r\n    login(username: \"testUser\", password: \"password123\")\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "movies",
+			"item": [
+				{
+					"name": "movie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"movie object\", function () {\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"title\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"release_year\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"poster_path\");\r",
+									"});\r",
+									"\r",
+									"// Test: That the title and poster_path is correct.\r",
+									"pm.test(\"movie title and poster path correct\", function () {\r",
+									"    let title = jsonData.data.movie.title;\r",
+									"    pm.expect(title).to.eql('Kill Bill: Vol. 1');\r",
+									"\r",
+									"    let poster_path = jsonData.data.movie.poster_path;\r",
+									"    pm.expect(poster_path).to.eql('/97fNAi62HawGjWru7PvVmF7RAbU.jpg');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Movie {\r\n    movie(id: \"24\") {\r\n        id\r\n        title\r\n        release_year\r\n        description\r\n        poster_path\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "movies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"movies object\", function () {\r",
+									"    pm.expect(jsonData.data.movies).to.have.property(\"total\");\r",
+									"    pm.expect(jsonData.data.movies).to.have.property(\"movies\");\r",
+									"});\r",
+									"\r",
+									"// Test: That the movies has the right limit total\r",
+									"pm.test(\"movie title and poster path correct\", function () {\r",
+									"    let movies = jsonData.data.movies.movies;\r",
+									"    let amount = movies.length\r",
+									"\r",
+									"    pm.expect(amount).to.eql(25);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Movies {\r\n    movies(page: 1, limit: 25) {\r\n        total\r\n        movies {\r\n            id\r\n            title\r\n            release_year\r\n            description\r\n            poster_path\r\n        }\r\n    }\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ratings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"Ratings object attributes\", function () {\r",
+									"    pm.expect(jsonData.data.ratings).to.have.property(\"average\");\r",
+									"    pm.expect(jsonData.data.ratings).to.have.property(\"allRatings\");\r",
+									"});\r",
+									"\r",
+									"// Test: That the movies has the right limit total\r",
+									"pm.test(\"Ratings correct\", function () {\r",
+									"    let average = jsonData.data.ratings.average;\r",
+									"    let allRatings = jsonData.data.ratings.allRatings;\r",
+									"\r",
+									"    pm.expect(average).to.eql(3);\r",
+									"    pm.expect(allRatings.length).to.eql(34)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Ratings {\r\n    ratings(movieId: \"24\") {\r\n        average\r\n        allRatings\r\n    }\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addMovie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right message.\r",
+									"pm.test(\"Add movie success message\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"addMovie\");\r",
+									"    \r",
+									"    let message = jsonData.data.addMovie;\r",
+									"    pm.expect(message).to.eql('Movie successfully added');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation AddMovie {\r\n    addMovie(title: \"test\", releaseYear: 1985, genre: \"Comedy\")\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateMovie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right message.\r",
+									"pm.test(\"Add movie success message\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"updateMovie\");\r",
+									"    \r",
+									"    let message = jsonData.data.updateMovie;\r",
+									"    pm.expect(message).to.eql('Movie successfully changed!');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateMovie {\r\n    updateMovie(id: \"0\", title: \"new\", description: \"test desc\", releaseYear: 1999, genre: \"Comedy\")\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "actors",
+			"item": [
+				{
+					"name": "actor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"Actor object contains correct attributes\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"actor\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"gender\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"profile_path\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Actor object contains correct values\", function () {\r",
+									"    let id = jsonData.data.actor.id;\r",
+									"    let name = jsonData.data.actor.name;\r",
+									"\r",
+									"    pm.expect(id).to.eql('1245');\r",
+									"    pm.expect(name).to.eql('Scarlett Johansson');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Actor {\r\n    actor(name: \"Scarlett johansson\") {\r\n        id\r\n        name\r\n        gender\r\n        profile_path\r\n    }\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"actors object\", function () {\r",
+									"    pm.expect(jsonData.data.actors).to.have.property(\"total\");\r",
+									"    pm.expect(jsonData.data.actors).to.have.property(\"actors\");\r",
+									"});\r",
+									"\r",
+									"// Test: That the actors has the right limit total\r",
+									"pm.test(\"actors title and poster path correct\", function () {\r",
+									"    let actors = jsonData.data.actors.actors;\r",
+									"    let amount = actors.length\r",
+									"\r",
+									"    pm.expect(amount).to.eql(25);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Actors {\r\n    actors(page: 1, limit: 25) {\r\n        total\r\n        actors {\r\n            id\r\n            name\r\n            gender\r\n            profile_path\r\n        }\r\n    }\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "nested",
+			"item": [
+				{
+					"name": "movie&ratings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"movie object have correct attributes\", function () {\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"title\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"release_year\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData.data.movie).to.have.property(\"poster_path\");\r",
+									"});\r",
+									"\r",
+									"// Test: That the title and poster_path is correct.\r",
+									"pm.test(\"movie title and poster path correct\", function () {\r",
+									"    let title = jsonData.data.movie.title;\r",
+									"    pm.expect(title).to.eql('Kill Bill: Vol. 1');\r",
+									"\r",
+									"    let poster_path = jsonData.data.movie.poster_path;\r",
+									"    pm.expect(poster_path).to.eql('/97fNAi62HawGjWru7PvVmF7RAbU.jpg');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"That ratings are present and correct:\", function () {\r",
+									"    let average = jsonData.data.movie.ratings.average;\r",
+									"    let allRatings = jsonData.data.movie.ratings.allRatings;\r",
+									"\r",
+									"    pm.expect(average).to.eql(3);\r",
+									"    pm.expect(allRatings.length).to.eql(34)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Movie {\r\n    movie(id: \"24\") {\r\n        id\r\n        title\r\n        release_year\r\n        description\r\n        poster_path\r\n        ratings {\r\n            average\r\n            allRatings\r\n        }\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "actor&roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response object contains the right attributes.\r",
+									"pm.test(\"Actor object contains correct attributes\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"actor\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"gender\");\r",
+									"    pm.expect(jsonData.data.actor).to.have.property(\"profile_path\");\r",
+									"});\r",
+									"\r",
+									"// Test: That id and name are correct values.\r",
+									"pm.test(\"Actor object contains correct values\", function () {\r",
+									"    let id = jsonData.data.actor.id;\r",
+									"    let name = jsonData.data.actor.name;\r",
+									"\r",
+									"    pm.expect(id).to.eql('31');\r",
+									"    pm.expect(name).to.eql('Tom Hanks');\r",
+									"});\r",
+									"\r",
+									"// Test: That roles are present.\r",
+									"pm.test(\"Actor object contains roles\", function () {\r",
+									"    let roles = jsonData.data.actor.roles;\r",
+									"\r",
+									"    pm.expect(roles.length).to.eql(38);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Actor {\r\n    actor(name: \"tom hanks\") {\r\n        id\r\n        name\r\n        gender\r\n        profile_path\r\n        roles {\r\n            character\r\n            movie\r\n        }\r\n    }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "last",
+			"item": [
+				{
+					"name": "deleteUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Test: Response has a success message.\r",
+									"pm.test(\"deleteUser response contains a success message\", function () {\r",
+									"    pm.expect(jsonData.data).to.have.property(\"deleteUser\");\r",
+									"    let message = jsonData.data.deleteUser;\r",
+									"    pm.expect(message).to.eql('User successfully deleted');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation DeleteUser {\r\n    deleteUser(username: \"testUser\")\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}",
+							"host": [
+								"{{base_url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://cscloud6-72.lnu.se/movieAPI/graphql",
+			"type": "string"
+		},
+		{
+			"key": "JWT",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -101,7 +101,7 @@ export const userResolvers = {
         const comparedPasswords = await argon2.verify(user.password, password)
 
         if (!comparedPasswords) {
-          error = new Error('Username or password is incorrect')
+          error = new Error('Username and/or password is incorrect')
           throw error
         }
 

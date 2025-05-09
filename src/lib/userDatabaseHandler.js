@@ -39,12 +39,13 @@ export class UserDatabaseHandler {
    * @param {string} password  - new password.
    */
   async createUser (username, password) {
-    // Create the user in the database, if the user exist already throw an error.
-    const query = 'INSERT INTO User (username, password) VALUES (?, ?)'
-    const response = await db.execute(query, [username, password])
+    try {
+      // Create the user in the database, if the user exist already throw an error.
+      const query = 'INSERT INTO User (username, password) VALUES (?, ?)'
 
-    if (!response) {
-      const error = new Error('That username already exists, try again.')
+      await db.execute(query, [username, password])
+    } catch (error) {
+      error.message = 'That username already exists, try again.'
       error.status = 409
       throw error
     }
@@ -56,12 +57,13 @@ export class UserDatabaseHandler {
    * @param {string} userID - user ID
    */
   async deleteUser (userID) {
-    // Create the delete query.
-    const query = 'DELETE FROM User WHERE id = ?'
-    const response = await db.execute(query, [userID])
+    try {
+      // Create the delete query.
+      const query = 'DELETE FROM User WHERE id = ?'
 
-    if (!response) {
-      const error = new Error('Could not delete that user')
+      await db.execute(query, [userID])
+    } catch (error) {
+      error.message = 'Could not delete that user'
       error.status = 409
       throw error
     }
