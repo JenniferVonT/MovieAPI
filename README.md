@@ -5,7 +5,7 @@
 
 # Links 
 - [Production url](https://cscloud6-72.lnu.se/movieAPI/graphql)
-- [Postman document url](https://.postman.co/workspace/Public-workspace~986be849-2061-4d76-abaf-b21a06e70d95/collection/34049622-9ebe5071-cae4-4fb3-ba74-0feb479768d1?action=share&creator=34049622&active-environment=34049622-e47db617-bb47-4326-89b6-f83ab5e6175f)
+- [Postman document url](https://www.postman.com/blue-zodiac-723452/workspace/movieapi-ws/collection/34049622-9094b2ed-491c-4246-9eaf-1e8db2922adc?action=share&creator=34049622)
 - [GraphQL Sandbox/playground](https://studio.apollographql.com/graph/movieAPI/variant/current/home)
 
 ## Description
