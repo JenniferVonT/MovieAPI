@@ -141,9 +141,10 @@ export const userResolvers = {
         if (username === user.username) {
           // If correct delete from the DB.
           await DBHandler.deleteUser(user.id)
+          return 'User successfully deleted'
         }
 
-        return 'User successfully deleted'
+        return 'Could not delete that user'
       } catch (error) {
         console.error(error)
         throw error

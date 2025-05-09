@@ -120,8 +120,13 @@ export class MovieDatabaseHandler {
    * @param {string} title - Movie title.
    * @param {string} releaseYear - Year when movie was released.
    * @param {string} genre - Movie Genre.
+   * @returns {string} the movie id.
    */
   async addMovie (title, releaseYear, genre) {
+    if (releaseYear < 1800) {
+      throw new Error('The release year has to be after the 1800')
+    }
+
     // First create a unique ID.
     const idQuery = 'SELECT MAX(id) AS max_id FROM Movie'
     const [result] = await db.execute(idQuery)
@@ -142,6 +147,8 @@ export class MovieDatabaseHandler {
     } else {
       await this.createMovieHasGenre(genre, movieID)
     }
+
+    return movieID
   }
 
   /**
@@ -160,6 +167,10 @@ export class MovieDatabaseHandler {
     if (!id) {
       error = new Error('Invalid id')
       throw error
+    }
+
+    if (releaseYear && releaseYear < 1800) {
+      throw new Error('The release year has to be after the 1800')
     }
 
     // Check which attributes are present and build the query accordingly.

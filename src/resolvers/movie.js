@@ -165,7 +165,7 @@ export const movieResolvers = {
      * @param {object} parent - Parent/root object.
      * @param {object} payload - arguments.
      * @param {object} context - The context containing accesstoken.
-     * @returns {string} - confirmation message.
+     * @returns {object} - newly created movie object.
      */
     addMovie: async (parent, payload, context) => {
       try {
@@ -176,9 +176,17 @@ export const movieResolvers = {
 
         const { title, releaseYear, genre } = payload
 
-        await DBHandler.addMovie(title, releaseYear, genre)
+        const res = await DBHandler.addMovie(title, releaseYear, genre)
 
-        return 'Movie successfully added'
+        const movie = {
+          id: res,
+          title,
+          release_year: releaseYear,
+          description: '',
+          poster_path: ''
+        }
+
+        return movie
       } catch (error) {
         console.error(error)
         throw error

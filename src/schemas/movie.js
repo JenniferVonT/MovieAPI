@@ -65,7 +65,7 @@ export const movieTypeDefs = gql`
     actor(name: String!): ActorWithRoles
     movies(page: Int, limit: Int): PaginatedMovies
     movie(id: ID!): MovieWithRatings
-    addMovie(title: String!, releaseYear: Int!, genre: String!): String!
+    addMovie(title: String!, releaseYear: Int!, genre: String!): Movie!
     updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): String!
     deleteMovie(id: ID!): String!
     ratings(movieId: ID!): Rating!
