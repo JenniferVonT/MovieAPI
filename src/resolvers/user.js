@@ -79,30 +79,25 @@ export const userResolvers = {
     login: async (parent, payload) => {
       try {
         const { username, password } = payload
-        let error
+        const errorMsg = 'Username and/or password is incorrect'
 
         // Check that username and password is given.
         if (!username) {
-          error = new Error('Username is missing')
+          throw new Error(errorMsg)
         } else if (!password) {
-          error = new Error('Password is missing')
+          throw new Error(errorMsg)
         } else if (!username && !password) {
-          error = new Error('Username and password is missing')
-        }
-
-        if (error) {
-          throw error
+          throw new Error(errorMsg)
         }
 
         // Fetch the user.
         const user = await DBHandler.getUser(username)
 
-        // Compare the passwords against eachoter.
+        // Compare the passwords against eachother.
         const comparedPasswords = await argon2.verify(user.password, password)
 
         if (!comparedPasswords) {
-          error = new Error('Username and/or password is incorrect')
-          throw error
+          throw new Error(errorMsg)
         }
 
         const JWTuser = { id: user.ID, username }
@@ -141,12 +136,18 @@ export const userResolvers = {
         if (username === user.username) {
           // If correct delete from the DB.
           await DBHandler.deleteUser(user.id)
-          return 'User successfully deleted'
         }
 
-        return 'Could not delete that user'
+        return 'User successfully deleted'
       } catch (error) {
         console.error(error)
+
+        // If the authentication throws an error change the message.
+        if (error.message === 'Username and/or password is incorrect') {
+          error.message = 'Could not delete that user'
+          error.status = 409
+        }
+
         throw error
       }
     }

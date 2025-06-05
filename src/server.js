@@ -17,6 +17,7 @@ import { resolvers } from './resolvers/resolver.js'
 import { randomUUID } from 'node:crypto'
 import { logger } from './config/winston.js'
 import { connectToDatabase, db } from './config/dbsettings.js'
+import { GraphQLError } from 'graphql'
 
 try {
   // Connect to database
@@ -55,6 +56,7 @@ try {
     resolvers,
     introspection: true,
     playground: true,
+    status400ForVariableCoercionErrors: true,
     /**
      * Set up a custom error handler, only show pertinent information in production.
      *
@@ -64,10 +66,12 @@ try {
      */
     formatError: (formattedError, error) => {
       if (process.env.NODE_ENV === 'production') {
-        return {
-          message: error.message,
-          code: error.extensions?.code || 'ERROR'
-        }
+        return new GraphQLError(error.message, {
+          extensions: {
+            code: error.extensions?.code || 'ERROR',
+            status: error.originalError.status
+          }
+        })
       }
 
       return error

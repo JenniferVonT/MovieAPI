@@ -26,7 +26,7 @@ export class UserDatabaseHandler {
 
     // If the user doesn't exist throw an error.
     if (!user) {
-      throw new Error('User does not exist')
+      throw new Error('Username and/or password is incorrect')
     }
 
     return user
