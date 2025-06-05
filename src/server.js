@@ -80,6 +80,11 @@ try {
 
   await graphqlServer.start()
 
+  // Redirect the endpoint to the sandbox on GET requests.
+  app.get('/graphql', (req, res) => {
+    res.redirect('https://studio.apollographql.com/graph/movieAPI/variant/current/explorer')
+  })
+
   // Mount GraphQL endpoint middleware and set the context.
   app.use('/graphql', expressMiddleware(graphqlServer, {
     /**
