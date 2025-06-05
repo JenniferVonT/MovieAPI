@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "df15067d-a6ea-4cf8-a20b-05e21c783f32",
+		"_postman_id": "9ebe5071-cae4-4fb3-ba74-0feb479768d1",
 		"name": "MovieAPI",
-		"description": "The movieAPI provides many API operations that enable you to manage movies seamlessly through the graphQL language/interface. Create, update and delete movies of your choice, get data on thousands of actors and movies in seconds.\n\n## **Getting started guide**\n\nTo start using the movieAPI, you need to -\n\n- The operations requiring authentication need a JWT bearer token in the header, which you can read about how to get under the authentication section\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- The API returns request responses in application/JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n- The API only uses one endpoint for operations and can be reached at: [https://cscloud6-72.lnu.se/movieAPI/graphql](https://cscloud6-72.lnu.se/movieAPI/graphql)\n    \n- To check the status of the API, you can query /health, which returns a 200 status code if the server is up and running.\n    \n\n## Authentication\n\nThe movieAPI uses JWT bearer tokens for authentication.\n\nTo get a JWT token, you need to run the newUser and login operations with a username and password. If a user already exists, the login operation is enough, it will only return a JWT token, which is valid for 12 hours.\n\nFor all operations that create, edit, and delete a resource, you will need to supply the JWT bearer token in the header of your request. The read-only queries and mutations do not need any authentication.\n\n### Authentication error response\n\nIf an API token is missing, malformed, or invalid, you will receive an HTTP 401 or 403 Unauthorized response code.\n\n## Rate and usage limits\n\nAt the moment there is no rate or usage limits.\n\n## Operations\n\n`** = requires authentication with a JWT token.`\n\n`! = required parameter`\n\nMutations/Queries:\n\n#### User:\n\n- newUser(username: String, password: String): Creates a new user.\n    \n- login(username: String, password: String): Returns a JWT access token.\n    \n- deleteUser(username): ** Deletes a user completely from the database.\n    \n\n---\n\n#### Movies/Actors:\n\n- actors(page: Int, limit: Int): Returns a array of actors, default page/limit is 1/20.\n    \n- actor(name: String!): Returns an object with information about an actor.\n    \n- movies(page: Int, limit: Int): Returns an object with a list of movies, default page/limit is 1/20.\n    \n- movie(id: ID!): Returns an object with information about a movie.\n    \n- ratings(movieId: ID!): Returns an object with the ratings (all and average).\n    \n- addMovie(title: String!, releaseYear: Int!, genre: String!): ** Creates a movie in the database.\n    \n- updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): ** Updates an existing movie.\n    \n- deleteMovie(id: ID!): ** Deletes an existing movie.\n    \n\nHere is an example of the movie operation that fetches a movie with all available information.\n\n``` graphql\nmutation Movie {\n    movie(id: \"24\") {\n        id\n        title\n        release_year\n        description\n        poster_path\n    }\n}\n\n ```\n\n#### Nested queries\n\nThere is some nested queries available\n\n- actor nested with roles: get data on an actor and include all of their movie roles.\n    \n- movie nested with ratings: get data on a movie and include their rating.\n    \n\nExample of a nested actor/roles operation:\n\n``` graphql\nmutation Actor {\n    actor(name: \"tom hanks\") {\n        id\n        name\n        gender\n        profile_path\n        roles {\n            character\n            movie\n        }\n    }\n}\n\n ```\n\n### **Need some help?**\n\nThis API is available as a playground/sandbox at [https://studio.apollographql.com/graph/movieAPI/variant/current/home](https://studio.apollographql.com/graph/movieAPI/variant/current/home), when entering the site you will need an apollo account and click the \"Run in Explorer\" button in the top right corner. There you can try out all of the available operations.\n\nTo check out the API source code visit [https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design](https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design)\n\nIf you want to host your own API server there is database seed scripts in the source code repository that works on a mysql 8:0 server. They include both the built of the database tables and populates with data, just run the createdb.sql and then the import_all.sql inside your SQL database.",
+		"description": "The movieAPI provides many API operations that enable you to manage movies seamlessly through the graphQL language/interface. Create, update and delete movies of your choice, get data on thousands of actors and movies in seconds.\n\n## **Getting started guide**\n\nTo start using the movieAPI, you need to -\n\n- The operations requiring authentication need a JWT bearer token in the header, which you can read about how to get under the authentication section\n    \n- The API only responds to HTTPS-secured communications. Any requests sent via HTTP return an HTTP 301 redirect to the corresponding HTTPS resources.\n    \n- The API returns request responses in application/JSON format. When an API request returns an error, it is sent in the JSON response as an error key.\n    \n- The API only uses one endpoint for operations and can be reached at: [https://cscloud6-72.lnu.se/movieAPI/graphql](https://cscloud6-72.lnu.se/movieAPI/graphql)\n    \n- To check the status of the API, you can query /health, which returns a 200 status code if the server is up and running.\n    \n\n## Authentication\n\nThe movieAPI uses JWT bearer tokens for authentication.\n\nTo get a JWT token, you need to run the newUser and login operations with a username and password. If a user already exists, the login operation is enough, it will only return a JWT token, which is valid for 12 hours.\n\nFor all operations that create, edit, and delete a resource, you will need to supply the JWT bearer token in the header of your request. The read-only queries and mutations do not need any authentication.\n\n### Authentication error response\n\nIf an API token is missing, malformed, or invalid, you will receive an error message stating that the JWT is invalid.\n\n## Rate and usage limits\n\nAt the moment, there are no rate and/or usage limits.\n\n## Operations\n\n`** = requires authentication with a JWT token.`\n\n`! = required parameter`\n\nMutations/Queries:\n\n#### User:\n\n- newUser(username: String, password: String): Creates a new user.\n    \n- login(username: String, password: String): Returns a JWT access token.\n    \n- deleteUser(username): ** Deletes a user completely from the database.\n    \n\n---\n\n#### Movies/Actors:\n\n- actors(page: Int, limit: Int): Returns a array of actors, default page/limit is 1/20.\n    \n- actor(name: String!): Returns an object with information about an actor.\n    \n- movies(page: Int, limit: Int): Returns an object with a list of movies, default page/limit is 1/20.\n    \n- movie(id: ID!): Returns an object with information about a movie.\n    \n- ratings(movieId: ID!): Returns an object with the ratings (all and average).\n    \n- addMovie(title: String!, releaseYear: Int!, genre: String!): ** Creates a movie in the database.\n    \n- updateMovie(id: ID!, title: String, description: String, releaseYear: Int, genre: String): ** Updates an existing movie.\n    \n- deleteMovie(id: ID!): ** Deletes an existing movie.\n    \n\nHere is an example of the movie operation that fetches a movie with all available information.\n\n``` graphql\nmutation Movie {\n    movie(id: \"24\") {\n        id\n        title\n        release_year\n        description\n        poster_path\n    }\n}\n\n ```\n\n#### Nested queries\n\nThere is some nested queries available\n\n- actor nested with roles: get data on an actor and include all of their movie roles.\n    \n- movie nested with ratings: get data on a movie and include their rating.\n    \n\nExample of a nested actor/roles operation:\n\n``` graphql\nmutation Actor {\n    actor(name: \"tom hanks\") {\n        id\n        name\n        gender\n        profile_path\n        roles {\n            character\n            movie\n        }\n    }\n}\n\n ```\n\n### **Need some help?**\n\nThis API is available as a playground/sandbox at [https://studio.apollographql.com/graph/movieAPI/variant/current/home](https://studio.apollographql.com/graph/movieAPI/variant/current/home), when entering the site you will need an apollo account and click the \"Run in Explorer\" button in the top right corner. There you can try out all of the available operations.\n\nTo check out the API source code visit [https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design](https://gitlab.lnu.se/1dv027/student/jv222th/assignment-api-design)\n\nIf you want to host your own API server there is database seed scripts in the source code repository that works on a mysql 8:0 server. They include both the built of the database tables and populates with data, just run the createdb.sql and then the import_all.sql inside your SQL database.\n\nTo view the image paths that are given you will need the base url: [https://image.tmdb.org/t/p/original](https://image.tmdb.org/t/p/original)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "34049622"
+		"_exporter_id": "34049622",
+		"_collection_link": "https://www.postman.com/blue-zodiac-723452/workspace/public-workspace/collection/34049622-9ebe5071-cae4-4fb3-ba74-0feb479768d1?action=share&source=collection_link&creator=34049622"
 	},
 	"item": [
 		{
@@ -33,7 +34,25 @@
 									"pm.test(\"newUser response contains correct message\", function () {\r",
 									"    let message = jsonData.data.newUser;\r",
 									"    pm.expect(message).to.eql('A user was successfully created, login to get an authentication key!');\r",
-									"});"
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Create new username and password.\r",
+									"const randomStr = Math.random().toString(36).substring(2, 8)\r",
+									"\r",
+									"let username = \"test\" + randomStr\r",
+									"let password = \"P@ssw0rd\" + randomStr\r",
+									"\r",
+									"pm.collectionVariables.set(\"test_user\", username)\r",
+									"pm.collectionVariables.set(\"test_psw\", password)"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -46,8 +65,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation NewUser {\r\n    newUser(username: \"testUser\", password: \"password123\")\r\n}\r\n",
-								"variables": ""
+								"query": "mutation NewUser($test_user: String!, $test_psw: String!) {\r\n    newUser(username: $test_user, password: $test_psw)\r\n}\r\n",
+								"variables": "{\r\n    \"test_user\": \"{{test_user}}\",\r\n    \"test_psw\": \"{{test_psw}}\"\r\n}"
 							}
 						},
 						"url": {
@@ -55,7 +74,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Create a new user"
 					},
 					"response": []
 				},
@@ -68,22 +88,24 @@
 								"exec": [
 									"let jsonData = pm.response.json();\r",
 									"\r",
-									"// Test status code.\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"// Test status code within the error message.\r",
+									"pm.test(\"Status code is 422 in error message\", function () {\r",
+									"    let status = jsonData.errors[0].extensions.status\r",
+									"    pm.expect(status).to.eql(422)\r",
 									"});\r",
 									"\r",
-									"// Test: Response has an error message.\r",
+									"// Test: Response has an error message and status code.\r",
 									"pm.test(\"newUser response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData.errors[0].extensions).to.have.property(\"status\");\r",
 									"\r",
 									"});\r",
 									"\r",
+									"// Test correct message.\r",
 									"pm.test(\"newUser response contains correct message\", function () {\r",
 									"    // Check the attribute value\r",
 									"    let message = jsonData.errors[0].message;\r",
-									"    pm.expect(message).to.eql('That username already exists, try again.');\r",
+									"    pm.expect(message).to.eql('Username and password not long enough. Username needs to be atleast 4 characters long and password 10 characters long');\r",
 									"})"
 								],
 								"type": "text/javascript",
@@ -97,7 +119,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation NewUser {\r\n    newUser(username: \"testUser\", password: \"password123\")\r\n}\r\n",
+								"query": "mutation NewUser {\r\n    newUser(username: \"1\", password: \"1\")\r\n}\r\n",
 								"variables": ""
 							}
 						},
@@ -145,6 +167,13 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -153,8 +182,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation Login {\r\n    login(username: \"testUser\", password: \"password123\")\r\n}\r\n",
-								"variables": ""
+								"query": "mutation Login($test_user: String!, $test_psw: String!) {\r\n    login(username: $test_user, password: $test_psw)\r\n}\r\n",
+								"variables": "{\r\n    \"test_user\": \"{{test_user}}\",\r\n    \"test_psw\": \"{{test_psw}}\"\r\n}"
 							}
 						},
 						"url": {
@@ -162,7 +191,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "login to an existing user"
 					},
 					"response": []
 				},
@@ -183,8 +213,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"login response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -215,7 +243,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation Login {\r\n    login(username: \"testUser\", password: \"password1234\")\r\n}\r\n",
+								"query": "mutation Login {\r\n    login(username: \"1\", password: \"password1234\")\r\n}\r\n",
 								"variables": ""
 							}
 						},
@@ -316,8 +344,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"movies response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -408,7 +434,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Fetch one movie and it's data"
 					},
 					"response": []
 				},
@@ -429,8 +456,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"movie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -490,8 +515,8 @@
 									"// update the env.\r",
 									"if (jsonData.data && id) {\r",
 									"  pm.collectionVariables.set(\"movie_id\", id);\r",
-									"  pm.collectionVariables.set(\"title\", \"\");\r",
-									"  pm.collectionVariables.set(\"release_year\", \"\");\r",
+									"  pm.collectionVariables.set(\"title\", \"test\");\r",
+									"  pm.collectionVariables.set(\"release_year\", 1988);\r",
 									"  pm.collectionVariables.set(\"description\", \"\");\r",
 									"  pm.collectionVariables.set(\"poster_path\", \"\");\r",
 									"} else {\r",
@@ -529,7 +554,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Add a movie to the database"
 					},
 					"response": []
 				},
@@ -550,8 +576,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"addmovie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -657,7 +681,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Update a movie in the database."
 					},
 					"response": []
 				},
@@ -678,8 +703,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"updatemovie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -787,7 +810,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Delete a movie in the database."
 					},
 					"response": []
 				},
@@ -808,8 +832,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"delete movie response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -903,7 +925,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Get the ratings for a certain movie"
 					},
 					"response": []
 				},
@@ -924,8 +947,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"ratings response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -960,7 +981,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Fetch all movies, include page and limit for pagination"
 		},
 		{
 			"name": "actors",
@@ -1019,7 +1041,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Get one actor by their full name"
 					},
 					"response": []
 				},
@@ -1040,8 +1063,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"actor response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
-									"\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -1130,7 +1151,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Get all the actors in the database, include page and limit for pagination."
 					},
 					"response": []
 				},
@@ -1151,7 +1173,6 @@
 									"// Test: Response has an error message.\r",
 									"pm.test(\"actors response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
 									"});\r",
 									"\r",
 									"\r",
@@ -1257,7 +1278,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Nested query/mutation to fetch one movie and it's connected ratings."
 					},
 					"response": []
 				},
@@ -1323,7 +1345,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "Nested query/mutation for geting one actor (based on their full name) and the roles that they've played."
 					},
 					"response": []
 				}
@@ -1356,6 +1379,13 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1374,8 +1404,8 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation DeleteUser {\r\n    deleteUser(username: \"testUser\")\r\n}",
-								"variables": ""
+								"query": "mutation DeleteUser($test_user: String!) {\r\n    deleteUser(username: $test_user)\r\n}",
+								"variables": "{\r\n    \"test_user\": \"{{test_user}}\"\r\n}"
 							}
 						},
 						"url": {
@@ -1383,7 +1413,8 @@
 							"host": [
 								"{{base_url}}"
 							]
-						}
+						},
+						"description": "deletes a user from the database."
 					},
 					"response": []
 				},
@@ -1397,20 +1428,21 @@
 									"let jsonData = pm.response.json();\r",
 									"\r",
 									"// Test status code.\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"Status code is 409 in the error object\", function () {\r",
+									"    let status = jsonData.errors[0].extensions.status\r",
+									"    pm.expect(status).to.eql(409);\r",
 									"});\r",
 									"\r",
 									"// Test: Response has an error message.\r",
 									"pm.test(\"delete user response contains an error message\", function () {\r",
 									"    pm.expect(jsonData.errors[0]).to.have.property(\"message\");\r",
-									"    pm.expect(jsonData.errors[0]).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData.errors[0].extensions).to.have.property(\"status\");\r",
 									"});\r",
 									"\r",
 									"pm.test(\"delete user response contains correct message\", function () {\r",
 									"    // Check the attribute value\r",
 									"    let message = jsonData.errors[0].message;\r",
-									"    pm.expect(message).to.eql('User does not exist');\r",
+									"    pm.expect(message).to.eql('Could not delete that user');\r",
 									"})\r",
 									""
 								],
@@ -1435,7 +1467,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation DeleteUser {\r\n    deleteUser(username: \"testUser123\")\r\n}",
+								"query": "mutation DeleteUser {\r\n    deleteUser(username: \"1\")\r\n}",
 								"variables": ""
 							}
 						},
@@ -1473,5 +1505,38 @@
 			}
 		}
 	],
-	"variable": []
+	"variable": [
+		{
+			"key": "JWT",
+			"value": ""
+		},
+		{
+			"key": "movie_id",
+			"value": ""
+		},
+		{
+			"key": "title",
+			"value": ""
+		},
+		{
+			"key": "release_year",
+			"value": ""
+		},
+		{
+			"key": "description",
+			"value": ""
+		},
+		{
+			"key": "poster_path",
+			"value": ""
+		},
+		{
+			"key": "test_user",
+			"value": ""
+		},
+		{
+			"key": "test_psw",
+			"value": ""
+		}
+	]
 }
