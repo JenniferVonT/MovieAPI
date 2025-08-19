@@ -11,8 +11,7 @@
     "start": "node src/server.js",
     "dev": "nodemon --inspect --env-file=.env src/server.js",
     "lint": "npx eslint ./src || exit 0",
-    "lint:fix": "npx eslint ./src --fix || exit 0",
-    "seed": "node db/seed.js"
+    "lint:fix": "npx eslint ./src --fix || exit 0"
   },
   "dependencies": {
     "@apollo/server": "^4.12.0",
