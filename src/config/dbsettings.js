@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-param-type */
 /**
  * @file This module contains the database settings and connection.
  * @module dbsettings
@@ -15,18 +16,29 @@ export const db = mysql.createPool({
 }).promise()
 
 /**
- * Connects to the DB.
+ * Connects to the DB with retry logic.
  *
  * @param {mysql.Pool} db - The pool created for the db.
+ * @param retries How many times it tries to connect.
+ * @param delay How long the delay between tries should be.
  */
-export const connectToDatabase = async (db) => {
-  try {
-    const connection = await db.getConnection()
-
-    console.log('Database successfully connected!')
-
-    connection.release()
-  } catch (e) {
-    process.exit(1)
+export const connectToDatabase = async (db, retries = 5, delay = 5000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const connection = await db.getConnection()
+      console.log('✅ Database successfully connected!')
+      connection.release()
+      return
+    } catch (e) {
+      console.error(`⚠️ Database connection failed. Retry ${i + 1}/${retries}...`)
+      console.error(e.message)
+      if (i < retries - 1) {
+        // eslint-disable-next-line promise/param-names
+        await new Promise(res => setTimeout(res, delay))
+      } else {
+        console.error('❌ Could not connect to the database. Exiting.')
+        process.exit(1)
+      }
+    }
   }
 }
