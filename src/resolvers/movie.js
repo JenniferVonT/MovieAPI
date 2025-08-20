@@ -73,32 +73,17 @@ export const movieResolvers = {
      * @returns {object} - Movie object.
      */
     actor: async (parent, payload, context, info) => {
-      const { name } = payload
+      try {
+        const { name } = payload
 
-      // Fetch the actor from the database.
-      const [actor] = await DBHandler.getActorByName(name)
+        // Fetch the actor from the database.
+        const actor = await DBHandler.getActorByName(name)
 
-      // Check if roles are also requested (nested query)
-      const fieldNodes = info.fieldNodes
-      const rolesReq = fieldNodes.some(node => node.selectionSet && node.selectionSet.selections.some(sel => sel.name.value === 'roles'))
-
-      if (rolesReq) {
-        const roles = await DBHandler.getAllRoles(actor.id)
-
-        actor.roles = []
-
-        // Insert all the roles and their movies in the actor object.
-        for (const role of roles) {
-          const [movie] = await DBHandler.getMovieByID(role.movie_id)
-
-          actor.roles.push({
-            character: role.character_name,
-            movie: movie.title
-          })
-        }
+        return actor
+      } catch (error) {
+        console.error(error)
+        throw error
       }
-
-      return actor
     },
 
     /**

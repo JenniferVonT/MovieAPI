@@ -19,8 +19,7 @@ export class MovieDatabaseHandler {
    * @returns {Array} the movie objects.
    */
   async getMovies (limit = 2000, offset = 1) {
-    const query = `
-                  SELECT 
+    const query = `SELECT 
                       m.id,
                       m.title,
                       m.release_year,
@@ -31,23 +30,18 @@ export class MovieDatabaseHandler {
                   LEFT JOIN movie_has_genre mg ON m.id = mg.movie_id
                   LEFT JOIN genre g ON mg.genre_id = g.id
                   GROUP BY m.id
-                  LIMIT ? OFFSET ?;
+                  LIMIT ${limit} OFFSET ${offset};
                   `
 
-    const [rows] = await db.execute(query, [limit, offset])
+    const [rows] = await db.execute(query)
 
-    // If movies can have multiple genres, group them
-    const movieMap = {}
-    rows.forEach(row => {
-      if (!movieMap[row.id]) {
-        movieMap[row.id] = { ...row, genre: [] }
-      }
-      if (row.genre) {
-        movieMap[row.id].genre.push(row.genre)
-      }
-    })
+    // Turn the genre attribute into an array instead of a string.
+    const movies = await rows.map(row => ({
+      ...row,
+      genres: row.genres ? row.genres.split(',') : []
+    }))
 
-    return Object.values(movieMap)
+    return movies
   }
 
   /**
@@ -99,12 +93,39 @@ export class MovieDatabaseHandler {
    * @returns {object} - The actor object.
    */
   async getActorByName (name) {
-    // Make the query case insensitive by making the search in uppercase.
-    const query = 'SELECT * FROM Actor WHERE UPPER(name) = UPPER(?)'
-    const [actor] = await db.execute(query, [name])
+  // Case-insensitive search
+    const query = `
+      SELECT 
+        a.id AS actor_id,
+        a.name AS actor_name,
+        a.gender AS actor_gender,
+        a.profile_path,
+        r.character_name,
+        m.id AS movie_id,
+        m.title AS movie_title
+      FROM Actor a
+      LEFT JOIN Role r ON a.id = r.actor_id
+      LEFT JOIN Movie m ON r.movie_id = m.id
+      WHERE UPPER(a.name) = UPPER(?)
+    `
 
-    if (actor.length === 0) {
+    const [rows] = await db.execute(query, [name])
+
+    if (rows.length === 0) {
       throw new Error('That actor does not exist in this database')
+    }
+
+    // Transform into a single actor object with roles array
+    const actor = {
+      id: rows[0].actor_id,
+      name: rows[0].actor_name,
+      gender: rows[0].actor_gender,
+      profile_path: rows[0].profile_path,
+      roles: rows.map(row => ({
+        character: row.character_name,
+        movie_title: row.movie_title,
+        movie_id: row.movie_id
+      }))
     }
 
     return actor
@@ -279,9 +300,11 @@ export class MovieDatabaseHandler {
                         JOIN genre g ON mg.genre_id = g.id
                         WHERE m.id = ${movieID}
                         `
-    const [genres] = await db.execute(genreQuery)
+    const [response] = await db.execute(genreQuery)
 
-    return genres.map(g => g.genre_name)
+    const genres = await response.map(g => g.genre_name)
+
+    return genres
   }
 
   /**

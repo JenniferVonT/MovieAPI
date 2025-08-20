@@ -11,7 +11,7 @@ export const movieTypeDefs = gql`
   type Movie {
     id: ID!
     title: String!
-    genre: [String]
+    genres: [String]
     release_year: Int
     description: String
     poster_path: String
@@ -20,7 +20,7 @@ export const movieTypeDefs = gql`
   type MovieWithRatings {
     id: ID!
     title: String!
-    genre: [String]
+    genres: [String]
     release_year: Int
     description: String
     poster_path: String
@@ -54,7 +54,8 @@ export const movieTypeDefs = gql`
 
   type Role {
     character: String
-    movie: String
+    movie_title: String
+    movie_id: ID
   }
 
   type Rating {
