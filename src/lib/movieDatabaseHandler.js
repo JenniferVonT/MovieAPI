@@ -378,4 +378,18 @@ export class MovieDatabaseHandler {
 
     return resultObj
   }
+
+  /**
+   * Fetches all the genres in the database.
+   *
+   * @returns {[string]} - all genres.
+   */
+  async getAllGenres () {
+    // Query the db.
+    const query = 'SELECT name FROM genre;'
+
+    const [genres] = await db.execute(query)
+
+    return genres.map(g => g.name)
+  }
 }

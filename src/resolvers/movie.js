@@ -11,6 +11,23 @@ import { MovieDatabaseHandler } from '../lib/movieDatabaseHandler.js'
 const DBHandler = new MovieDatabaseHandler()
 
 export const movieResolvers = {
+  Query: {
+    /**
+     * Fetch all the available genres.
+     *
+     * @returns {[string]} - All the genres in an array.
+     */
+    genres: async () => {
+      try {
+        // return all genres.
+        const genres = await DBHandler.getAllGenres()
+        return genres
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
+    }
+  },
   Mutation: {
   /**
    * Fetch all the movies with pagination.

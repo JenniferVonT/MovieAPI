@@ -62,6 +62,11 @@ export const movieTypeDefs = gql`
     allRatings: [Float!]!
   }
 
+
+  type Query {
+    genres: [String!]
+  }
+
   type Mutation {
     actors(page: Int, limit: Int): PaginatedActors
     actor(name: String!): ActorWithRoles
