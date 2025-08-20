@@ -136,7 +136,7 @@ export const movieResolvers = {
         const id = payload.id
 
         // Fetch movie based on id.
-        const [movie] = await DBHandler.getMovieByID(id)
+        const movie = await DBHandler.getMovieByID(id)
 
         if (!movie || movie.length === 0) {
           throw new Error('Movie does not exist!')

@@ -24,6 +24,11 @@ export class MovieDatabaseHandler {
 
     const [movies] = await db.execute(query)
 
+    // Get all the genres.
+    for (const movie of movies) {
+      movie.genre = await this.getGenre(movie.id)
+    }
+
     return movies
   }
 
@@ -110,8 +115,14 @@ export class MovieDatabaseHandler {
   async getMovieByID (id) {
     const query = 'SELECT * FROM Movie WHERE id = ?'
 
-    const movie = await db.execute(query, [id])
-    return movie[0]
+    const response = await db.execute(query, [id])
+
+    const movie = response[0][0]
+
+    // Get the genres.
+    movie.genre = await this.getGenre(id)
+
+    return movie
   }
 
   /**
@@ -234,6 +245,25 @@ export class MovieDatabaseHandler {
     if (result.affectedRows === 0) {
       throw new Error('Something went wrong, could not delete movie')
     }
+  }
+
+  /**
+   * Fetches the movies genres.
+   *
+   * @param {string} movieID - the movie id.
+   * @returns {[string]} - All the genres of the movie in an array.
+   */
+  async getGenre (movieID) {
+    const genreQuery = `SELECT 
+                          g.name AS genre_name
+                        FROM movie m
+                        JOIN movie_has_genre mg ON m.id = mg.movie_id
+                        JOIN genre g ON mg.genre_id = g.id
+                        WHERE m.id = ${movieID}
+                        `
+    const [genres] = await db.execute(genreQuery)
+
+    return genres.map(g => g.genre_name)
   }
 
   /**
