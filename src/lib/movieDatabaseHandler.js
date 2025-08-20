@@ -20,11 +20,18 @@ export class MovieDatabaseHandler {
    */
   async getMovies (limit = 2000, offset = 1) {
     const query = `
-                    SELECT m.*, g.name AS genre
-                    FROM Movie m
-                    LEFT JOIN MovieGenre mg ON m.id = mg.movie_id
-                    LEFT JOIN Genre g ON mg.genre_id = g.id
-                    LIMIT ? OFFSET ?
+                  SELECT 
+                      m.id,
+                      m.title,
+                      m.release_year,
+                      m.description,
+                      m.poster_path,
+                      GROUP_CONCAT(g.name) AS genres
+                  FROM movie m
+                  LEFT JOIN movie_has_genre mg ON m.id = mg.movie_id
+                  LEFT JOIN genre g ON mg.genre_id = g.id
+                  GROUP BY m.id
+                  LIMIT ? OFFSET ?;
                   `
 
     const [rows] = await db.execute(query, [limit, offset])
