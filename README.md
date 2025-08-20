@@ -4,7 +4,7 @@
 - GraphQL 
 
 # Links 
-- [Production url](https://cscloud6-72.lnu.se/movieAPI/graphql)
+- [Production url](https://jen-movie-api-1239f1b4c492.herokuapp.com/graphql) (https://jen-movie-api-1239f1b4c492.herokuapp.com/graphql)
 - [Postman document url](https://www.postman.com/blue-zodiac-723452/public-workspace/collection/bpp5m1e/movieapi?action=share&creator=34049622)
 - [GraphQL Sandbox/playground](https://studio.apollographql.com/graph/movieAPI/variant/current/home)
 
