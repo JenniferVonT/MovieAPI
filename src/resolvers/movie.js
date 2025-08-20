@@ -30,7 +30,7 @@ export const movieResolvers = {
   },
   Mutation: {
   /**
-   * Fetch all the movies with pagination.
+   * Fetch all the actors with pagination.
    *
    * @param {object} parent - Parent/root object.
    * @param {object} args - The arguments passed to the query.
@@ -38,17 +38,14 @@ export const movieResolvers = {
    * @param {number} args.limit - The number of items per page.
    * @returns {object} - an object of all the actors.
    */
-    actors: async (parent, { page, limit }) => {
+    actors: async (parent, { page = 1, limit = 50 }) => {
       try {
         // Validate the input parameters
         if (page < 1 || limit < 1) {
           throw new Error('Page and limit must be greater than 0.')
         }
 
-        let offset
-        if (page) {
-          offset = (page - 1) * limit
-        }
+        const offset = (page - 1) * limit
 
         // Fetch all actors with limits.
         const actors = await DBHandler.getActors(limit, offset)
@@ -113,17 +110,14 @@ export const movieResolvers = {
      * @param {number} args.limit - The number of items per page.
      * @returns {object} - an object of all the movies.
      */
-    movies: async (parent, { page, limit }) => {
+    movies: async (parent, { page = 1, limit = 50 }) => {
       try {
         // Validate the input parameters
         if (page < 1 || limit < 1) {
           throw new Error('Page and limit must be greater than 0.')
         }
 
-        let offset
-        if (page) {
-          offset = (page - 1) * limit
-        }
+        const offset = (page - 1) * limit
 
         // Fetch all movies.
         const movies = await DBHandler.getMovies(limit, offset)
