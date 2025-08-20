@@ -19,17 +19,28 @@ export class MovieDatabaseHandler {
    * @returns {Array} the movie objects.
    */
   async getMovies (limit = 2000, offset = 1) {
-    // Create query and fetch.
-    const query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
+    const query = `
+                    SELECT m.*, g.name AS genre
+                    FROM Movie m
+                    LEFT JOIN MovieGenre mg ON m.id = mg.movie_id
+                    LEFT JOIN Genre g ON mg.genre_id = g.id
+                    LIMIT ? OFFSET ?
+                  `
 
-    const [movies] = await db.execute(query)
+    const [rows] = await db.execute(query, [limit, offset])
 
-    // Get all the genres.
-    for (const movie of movies) {
-      movie.genre = await this.getGenre(movie.id)
-    }
+    // If movies can have multiple genres, group them
+    const movieMap = {}
+    rows.forEach(row => {
+      if (!movieMap[row.id]) {
+        movieMap[row.id] = { ...row, genre: [] }
+      }
+      if (row.genre) {
+        movieMap[row.id].genre.push(row.genre)
+      }
+    })
 
-    return movies
+    return Object.values(movieMap)
   }
 
   /**
