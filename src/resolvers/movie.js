@@ -148,8 +148,12 @@ export const movieResolvers = {
 
         // If it is include it in the response.
         if (ratingReq) {
-          const ratings = await DBHandler.getAllRatings(id)
-          movie.ratings = ratings
+          try {
+            const ratings = await DBHandler.getAllRatings(id)
+            movie.ratings = ratings
+          } catch (error) {
+            // Do nothing.
+          }
         }
 
         return movie
