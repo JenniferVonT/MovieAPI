@@ -19,8 +19,14 @@ export class MovieDatabaseHandler {
    * @returns {Array} the movie objects.
    */
   async getMovies (limit, offset) {
+    let query = ''
+
     // Create query and fetch.
-    const query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
+    if (limit || offset) {
+      query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
+    } else {
+      query = 'SELECT * FROM Movie'
+    }
 
     const [movies] = await db.execute(query)
 
@@ -53,8 +59,14 @@ export class MovieDatabaseHandler {
    * @returns {Array} the movie objects.
    */
   async getActors (limit, offset) {
+    let query = ''
+
     // Create query and fetch.
-    const query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
+    if (limit || offset) {
+      query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
+    } else {
+      query = 'SELECT * FROM Actor'
+    }
 
     const [actors] = await db.execute(query)
 
