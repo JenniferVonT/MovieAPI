@@ -43,8 +43,6 @@ export const movieResolvers = {
         // Validate the input parameters
         if (page < 1 || limit < 1) {
           throw new Error('Page and limit must be greater than 0.')
-        } else if (limit > 500) {
-          throw new Error('max limit is 500')
         }
 
         const offset = (page - 1) * limit
@@ -117,8 +115,6 @@ export const movieResolvers = {
         // Validate the input parameters
         if (page < 1 || limit < 1) {
           throw new Error('Page and limit must be greater than 0.')
-        } else if (limit > 500) {
-          throw new Error('max limit is 500')
         }
 
         const offset = (page - 1) * limit
