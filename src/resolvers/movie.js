@@ -38,17 +38,23 @@ export const movieResolvers = {
    * @param {number} args.limit - The number of items per page.
    * @returns {object} - an object of all the actors.
    */
-    actors: async (parent, { page = 1, limit = 20 }) => {
+    actors: async (parent, { page, limit }) => {
       try {
-        // Validate the input parameters
-        if (page < 1 || limit < 1) {
-          throw new Error('Page and limit must be greater than 0.')
+        let actors
+
+        if (page || limit) {
+          // Validate the input parameters
+          if (page < 1 || limit < 1) {
+            throw new Error('Page and limit must be greater than 0.')
+          }
+
+          const offset = (page - 1) * limit
+
+          // Fetch all actors with limits.
+          actors = await DBHandler.getActors(limit, offset)
+        } else {
+          actors = await DBHandler.getActors()
         }
-
-        const offset = (page - 1) * limit
-
-        // Fetch all actors with limits.
-        const actors = await DBHandler.getActors(limit, offset)
 
         // and the amount of actors.
         const total = await DBHandler.getTotalActorCount()
@@ -110,17 +116,23 @@ export const movieResolvers = {
      * @param {number} args.limit - The number of items per page.
      * @returns {object} - an object of all the movies.
      */
-    movies: async (parent, { page = 1, limit = 20 }) => {
+    movies: async (parent, { page, limit }) => {
       try {
-        // Validate the input parameters
-        if (page < 1 || limit < 1) {
-          throw new Error('Page and limit must be greater than 0.')
+        let movies
+
+        if (page || limit) {
+          // Validate the input parameters
+          if (page < 1 || limit < 1) {
+            throw new Error('Page and limit must be greater than 0.')
+          }
+
+          const offset = (page - 1) * limit
+
+          // Fetch all movies.
+          movies = await DBHandler.getMovies(limit, offset)
+        } else {
+          movies = DBHandler.getMovies()
         }
-
-        const offset = (page - 1) * limit
-
-        // Fetch all movies.
-        const movies = await DBHandler.getMovies(limit, offset)
 
         // and the amount of movies.
         const total = await DBHandler.getTotalMovieCount()
