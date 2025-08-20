@@ -40,21 +40,18 @@ export const movieResolvers = {
    */
     actors: async (parent, { page, limit }) => {
       try {
-        let actors
-
-        if (page || limit) {
-          // Validate the input parameters
-          if (page < 1 || limit < 1) {
-            throw new Error('Page and limit must be greater than 0.')
-          }
-
-          const offset = (page - 1) * limit
-
-          // Fetch all actors with limits.
-          actors = await DBHandler.getActors(limit, offset)
-        } else {
-          actors = await DBHandler.getActors()
+        // Validate the input parameters
+        if (page < 1 || limit < 1) {
+          throw new Error('Page and limit must be greater than 0.')
         }
+
+        let offset
+        if (page) {
+          offset = (page - 1) * limit
+        }
+
+        // Fetch all actors with limits.
+        const actors = await DBHandler.getActors(limit, offset)
 
         // and the amount of actors.
         const total = await DBHandler.getTotalActorCount()
@@ -118,21 +115,18 @@ export const movieResolvers = {
      */
     movies: async (parent, { page, limit }) => {
       try {
-        let movies
-
-        if (page || limit) {
-          // Validate the input parameters
-          if (page < 1 || limit < 1) {
-            throw new Error('Page and limit must be greater than 0.')
-          }
-
-          const offset = (page - 1) * limit
-
-          // Fetch all movies.
-          movies = await DBHandler.getMovies(limit, offset)
-        } else {
-          movies = DBHandler.getMovies()
+        // Validate the input parameters
+        if (page < 1 || limit < 1) {
+          throw new Error('Page and limit must be greater than 0.')
         }
+
+        let offset
+        if (page) {
+          offset = (page - 1) * limit
+        }
+
+        // Fetch all movies.
+        const movies = await DBHandler.getMovies(limit, offset)
 
         // and the amount of movies.
         const total = await DBHandler.getTotalMovieCount()

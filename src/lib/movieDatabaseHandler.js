@@ -18,15 +18,9 @@ export class MovieDatabaseHandler {
    * @param {number} offset - The offset (page)
    * @returns {Array} the movie objects.
    */
-  async getMovies (limit, offset) {
-    let query = ''
-
+  async getMovies (limit = 2000, offset = 1) {
     // Create query and fetch.
-    if (limit || offset) {
-      query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
-    } else {
-      query = 'SELECT * FROM Movie'
-    }
+    const query = `SELECT * FROM Movie LIMIT ${limit} OFFSET ${offset}`
 
     const [movies] = await db.execute(query)
 
@@ -58,15 +52,9 @@ export class MovieDatabaseHandler {
    * @param {number} offset - The offset (page)
    * @returns {Array} the movie objects.
    */
-  async getActors (limit, offset) {
-    let query = ''
-
+  async getActors (limit = 2000, offset = 1) {
     // Create query and fetch.
-    if (limit || offset) {
-      query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
-    } else {
-      query = 'SELECT * FROM Actor'
-    }
+    const query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
 
     const [actors] = await db.execute(query)
 
