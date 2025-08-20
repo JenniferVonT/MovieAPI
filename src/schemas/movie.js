@@ -40,7 +40,7 @@ export const movieTypeDefs = gql`
   }
 
   type PaginatedActors {
-    actors: [Actor]
+    actors: [ActorWithRoles]
     total: Int
   }
 

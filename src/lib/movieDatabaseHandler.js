@@ -60,15 +60,44 @@ export class MovieDatabaseHandler {
   /**
    * Gets all actors.
    *
-   * @param {number} limit - The amount of movies to fetch.
+   * @param {number} limit - The amount of actors to fetch.
    * @param {number} offset - The offset (page)
    * @returns {Array} the movie objects.
    */
   async getActors (limit = 2000, offset = 1) {
     // Create query and fetch.
-    const query = `SELECT * FROM Actor LIMIT ${limit} OFFSET ${offset}`
+    const query = `
+      SELECT 
+        a.id AS actor_id,
+        a.name AS actor_name,
+        a.gender,
+        a.profile_path,
+        COALESCE(
+          JSON_ARRAYAGG(
+            JSON_OBJECT(
+              'character', r.character_name,
+              'movie_id', m.id,
+              'movie_title', m.title
+            )
+          ), JSON_ARRAY()
+        ) AS roles
+      FROM actor a
+      LEFT JOIN role r ON r.actor_id = a.id
+      LEFT JOIN movie m ON r.movie_id = m.id
+      GROUP BY a.id
+      LIMIT ${limit} OFFSET ${offset};
+    `
 
-    const [actors] = await db.execute(query)
+    const [rows] = await db.execute(query)
+
+    // Parse JSON fields if needed
+    const actors = await rows.map(row => ({
+      id: row.actor_id,
+      name: row.actor_name,
+      gender: row.gender,
+      profile_path: row.profile_path,
+      roles: typeof row.roles === 'string' ? JSON.parse(row.roles) : row.roles
+    }))
 
     return actors
   }
